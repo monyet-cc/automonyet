@@ -1,4 +1,11 @@
-import { CreatePost, LemmyHttp, PostFeatureType } from "lemmy-js-client";
+import {
+  Community,
+  CreatePost,
+  GetPersonDetailsResponse,
+  LemmyHttp,
+  Person,
+  PostFeatureType,
+} from "lemmy-js-client";
 
 export class LemmyApi {
   constructor(
@@ -25,5 +32,12 @@ export class LemmyApi {
         auth: this.token,
       })
     ).post_view.post.id;
+  }
+
+  async getDetailsForPerson(person: Person): Promise<GetPersonDetailsResponse> {
+    return await this.client.getPersonDetails({
+      username: person.name,
+      auth: this.token,
+    });
   }
 }

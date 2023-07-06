@@ -4,7 +4,7 @@ import { LemmyApi } from "../ValueObjects/LemmyApi";
 
 export class LemmyApiFactory {
   public static async create(configuration: Configuration): Promise<LemmyApi> {
-    const client: LemmyHttp = new LemmyHttp(configuration.url);
+    const client: LemmyHttp = new LemmyHttp(configuration.instance.url);
     const token = (
       await client.login({
         username_or_email: configuration.bot.username,
@@ -14,7 +14,7 @@ export class LemmyApiFactory {
 
     if (token === undefined) {
       throw new Error(
-        `Unable to authenticate with instance API ${configuration.url}`
+        `Unable to authenticate with instance API ${configuration.instance.url}`
       );
     }
 
