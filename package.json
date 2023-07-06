@@ -30,5 +30,6 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "lemmy-bot": "^0.4.1"
-  }
+  },
+  "repository": "git@github.com:monyet-cc/automonyet.git"
 }
