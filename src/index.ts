@@ -1,13 +1,23 @@
-import { LemmyBot } from "lemmy-bot";
 import * as dotenv from "dotenv";
+import { LemmyBot } from "lemmy-bot";
+import { Configuration } from "./Classes/ValueObjects/Configuration";
 
 dotenv.config();
-const bot = new LemmyBot({
-  instance: process.env.INSTANCE_URL || "my.lemmy.local",
+
+// initialise the configuration for the bot
+const configuration: Configuration = Configuration.createFromEnv();
+
+// initialise the bot
+const bot: LemmyBot = new LemmyBot({
+  instance: configuration.bot.instance,
   credentials: {
-    username: process.env.BOT_USERNAME || "username",
-    password: process.env.BOT_PASSWORD || "password",
+    username: configuration.bot.username,
+    password: configuration.bot.password,
   },
+  federation: configuration.bot.isLocal ? "local" : "all",
+  dbFile: "database.sqlite3",
+  handlers: {},
+  schedule: [],
 });
 
 bot.start();
