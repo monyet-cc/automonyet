@@ -1,21 +1,21 @@
 import { stripIndents } from "common-tags";
-import { inject, injectable } from "inversify";
+import { provide } from "inversify-binding-decorators";
 import { BotActions } from "lemmy-bot";
 import { Person } from "lemmy-js-client";
 import moment from "moment";
-import { LemmyApiFactory } from "../../Factories/LemmyApiFactory";
-import { DeterminesIfUserModeratesCommunity } from "../../Services/DeterminesIfUserModeratesCommunity";
-import { Configuration } from "../../ValueObjects/Configuration";
-import { LemmyApi } from "../../ValueObjects/LemmyApi";
-import { HandlesPrivateMessage } from "../HandlesPrivateMessage";
+import { DeterminesIfUserModeratesCommunity } from "../../Services/DeterminesIfUserModeratesCommunity.js";
+import { Configuration } from "../../ValueObjects/Configuration.js";
+import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
+import { HandlesPrivateMessage } from "../HandlesPrivateMessage.js";
 
-@injectable()
+@provide(CreatesDailyThread)
 export class CreatesDailyThread implements HandlesPrivateMessage {
   private communityName = "cafe";
 
   constructor(
-    @inject(Configuration) private readonly configuration: Configuration,
-    @inject(LemmyApiFactory) private readonly lemmyApiFactory: LemmyApiFactory
+    private readonly configuration: Configuration,
+    private readonly client: LemmyApi,
+    private readonly determinesIfUserModeratesCommunity: DeterminesIfUserModeratesCommunity
   ) {}
 
   public getMatchExpression(): RegExp {
@@ -23,14 +23,13 @@ export class CreatesDailyThread implements HandlesPrivateMessage {
   }
 
   public async hasPermission(person: Person): Promise<boolean> {
-    return await DeterminesIfUserModeratesCommunity.handle(
+    return await this.determinesIfUserModeratesCommunity.handle(
       person,
       this.communityName
     );
   }
 
   public async handle(message: string, bot: BotActions): Promise<void> {
-    const api: LemmyApi = await this.lemmyApiFactory.create();
     const match: RegExpExecArray | null =
       this.getMatchExpression().exec(message);
     const joke: string | null = match !== null ? match[1].trim() : null;
@@ -47,7 +46,7 @@ export class CreatesDailyThread implements HandlesPrivateMessage {
         );
       }
 
-      await api.createFeaturedPost(
+      await this.client.createFeaturedPost(
         {
           name: `/c/café daily chat thread for ${moment().format(
             "D MMMM YYYY"

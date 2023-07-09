@@ -1,21 +1,21 @@
-import * as dotenv from "dotenv";
-import { LemmyBot } from "lemmy-bot";
-import { HandlesPrivateMessage } from "./Classes/Handlers/HandlesPrivateMessage";
-import { CreatesDailyThread } from "./Classes/Handlers/PrivateMessages/CreatesDailyThread";
-import { Configuration } from "./Classes/ValueObjects/Configuration";
+import packages from "lemmy-bot";
+import "reflect-metadata";
+import { HandlesPrivateMessage } from "./Classes/Handlers/HandlesPrivateMessage.js";
+import { CreatesDailyThread } from "./Classes/Handlers/PrivateMessages/CreatesDailyThread.js";
+import { container } from "./Classes/Services/ConfiguresInversify.js";
+import { Configuration } from "./Classes/ValueObjects/Configuration.js";
 
-dotenv.config();
+const { LemmyBot } = packages;
 
-// initialise the configuration for the bot
-const configuration: Configuration = Configuration.createFromEnv();
+const configuration = container.get<Configuration>(Configuration);
 
 // initialise the private message handlers
 const privateMessageHandlers: HandlesPrivateMessage[] = [
-  new CreatesDailyThread(configuration),
+  container.get<HandlesPrivateMessage>(CreatesDailyThread),
 ];
 
 // initialise the bot
-const bot: LemmyBot = new LemmyBot({
+const bot: packages.LemmyBot = new LemmyBot({
   instance: configuration.bot.instance,
   credentials: {
     username: configuration.bot.username,

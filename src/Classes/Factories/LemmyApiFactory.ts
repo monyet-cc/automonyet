@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import { LemmyHttp } from "lemmy-js-client";
-import { Configuration } from "../ValueObjects/Configuration";
-import { LemmyApi } from "../ValueObjects/LemmyApi";
+import { Configuration } from "../ValueObjects/Configuration.js";
+import { LemmyApi } from "../ValueObjects/LemmyApi.js";
 
 @injectable()
 export class LemmyApiFactory {
-  constructor(@inject(Configuration) private configuration: Configuration) {}
+  constructor(private configuration: Configuration) {}
 
   public async create(): Promise<LemmyApi> {
     const client: LemmyHttp = new LemmyHttp(this.configuration.instance.url);

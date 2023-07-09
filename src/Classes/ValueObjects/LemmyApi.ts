@@ -1,5 +1,4 @@
 import {
-  Community,
   CreatePost,
   GetPersonDetailsResponse,
   LemmyHttp,
