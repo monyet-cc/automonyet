@@ -10,7 +10,7 @@
     "outDir": "./dist",
     "declaration": true,
     "declarationDir": "./dist",
-    "types": ["reflect-metadata"],
+    "types": ["reflect-metadata", "jest"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "lib": ["es6", "dom"]
