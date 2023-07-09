@@ -7,6 +7,7 @@
       "email": "noreply@helkarakse.com"
     }
   ],
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "Proprietary",
@@ -25,6 +26,7 @@
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-file-extension-in-import-ts": "^1.0.2",
     "eslint-plugin-prettier": "^4.2.1",
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
@@ -34,6 +36,7 @@
     "common-tags": "^1.8.2",
     "dotenv": "^16.3.1",
     "inversify": "^6.0.1",
+    "inversify-binding-decorators": "^4.0.0",
     "lemmy-bot": "^0.4.1",
     "lemmy-js-client": "^0.18.1-rc.3",
     "moment": "^2.29.4",
