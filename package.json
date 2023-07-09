@@ -33,9 +33,11 @@
   "dependencies": {
     "common-tags": "^1.8.2",
     "dotenv": "^16.3.1",
+    "inversify": "^6.0.1",
     "lemmy-bot": "^0.4.1",
     "lemmy-js-client": "^0.18.1-rc.3",
     "moment": "^2.29.4",
+    "reflect-metadata": "^0.1.13",
     "sequelize": "^6.32.1"
   },
   "repository": "git@github.com:monyet-cc/automonyet.git"

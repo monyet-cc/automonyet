@@ -9,7 +9,11 @@
     "skipLibCheck": true,
     "outDir": "./dist",
     "declaration": true,
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "types": ["reflect-metadata"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["es6", "dom"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
