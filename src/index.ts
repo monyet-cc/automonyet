@@ -55,7 +55,7 @@ const bot: packages.LemmyBot = new LemmyBot({
             `Matched handler ${matchingHandler.constructor.name} using "${privateMessage}" from ${messageOrigin}`
           );
 
-          await matchingHandler.handle(privateMessage, bot.botActions);
+          await matchingHandler.handle(privateMessage);
         }
       }
     },

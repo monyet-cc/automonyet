@@ -29,22 +29,15 @@ export class CreatesDailyThread implements HandlesPrivateMessage {
     );
   }
 
-  public async handle(message: string, bot: BotActions): Promise<void> {
+  public async handle(message: string): Promise<void> {
     const match: RegExpExecArray | null =
       this.getMatchExpression().exec(message);
     const joke: string | null = match !== null ? match[1].trim() : null;
 
     if (joke !== null) {
-      const communityIdentifier = await bot.getCommunityId({
-        instance: this.configuration.bot.instance,
-        name: this.communityName,
-      });
-
-      if (communityIdentifier === undefined) {
-        throw new Error(
-          `Unable to find community id for name: ${this.communityName}`
-        );
-      }
+      const communityIdentifier = await this.client.getCommunityIdentifier(
+        this.communityName
+      );
 
       await this.client.createFeaturedPost(
         {
