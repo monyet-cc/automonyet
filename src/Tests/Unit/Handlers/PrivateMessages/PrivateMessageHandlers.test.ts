@@ -1,11 +1,11 @@
-import { LemmyApiFactoryMock } from "./../../Mocks/LemmyApiFactoryMock.js";
+import { LemmyApiFactoryMock } from "../../../Mocks/LemmyApiFactoryMock.js";
 import { LemmyHttp } from "lemmy-js-client";
-import { HandlesPrivateMessage } from "../../../Classes/Handlers/HandlesPrivateMessage.js";
-import { CreatesDailyThread } from "../../../Classes/Handlers/PrivateMessages/CreatesDailyThread.js";
-import { Configuration } from "../../../Classes/ValueObjects/Configuration.js";
+import { HandlesPrivateMessage } from "../../../../Classes/Handlers/HandlesPrivateMessage.js";
+import { CreatesDailyThread } from "../../../../Classes/Handlers/PrivateMessages/CreatesDailyThread.js";
+import { Configuration } from "../../../../Classes/ValueObjects/Configuration.js";
 import { when, anything } from "ts-mockito";
-import { createHttpMock } from "../../Mocks/LemmyHttpMock.js";
-import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesIfUserModeratesCommunity.js";
+import { createHttpMock } from "../../../Mocks/LemmyHttpMock.js";
+import { DeterminesIfUserModeratesCommunity } from "../../../../Classes/Services/DeterminesIfUserModeratesCommunity.js";
 
 describe("Test: Daily Thread", () => {
   it("Create Daily Thread", async () => {
@@ -27,7 +27,6 @@ describe("Test: Daily Thread", () => {
     // initialise the private message handlers
     const privateMessageHandlers: HandlesPrivateMessage[] = [
       new CreatesDailyThread(
-        configuration,
         apiMock,
         new DeterminesIfUserModeratesCommunity(configuration, apiMock)
       ),
