@@ -1,4 +1,5 @@
 import { stripIndents } from "common-tags";
+import { inject, injectable } from "inversify";
 import { BotActions } from "lemmy-bot";
 import { Person } from "lemmy-js-client";
 import moment from "moment";
@@ -8,10 +9,14 @@ import { Configuration } from "../../ValueObjects/Configuration";
 import { LemmyApi } from "../../ValueObjects/LemmyApi";
 import { HandlesPrivateMessage } from "../HandlesPrivateMessage";
 
+@injectable()
 export class CreatesDailyThread implements HandlesPrivateMessage {
   private communityName = "cafe";
 
-  constructor(public readonly configuration: Configuration) {}
+  constructor(
+    @inject(Configuration) private readonly configuration: Configuration,
+    @inject(LemmyApiFactory) private readonly lemmyApiFactory: LemmyApiFactory
+  ) {}
 
   public getMatchExpression(): RegExp {
     return /^automod daily joke:(.*)$/;
@@ -25,7 +30,7 @@ export class CreatesDailyThread implements HandlesPrivateMessage {
   }
 
   public async handle(message: string, bot: BotActions): Promise<void> {
-    const api: LemmyApi = await LemmyApiFactory.create(this.configuration);
+    const api: LemmyApi = await this.lemmyApiFactory.create();
     const match: RegExpExecArray | null =
       this.getMatchExpression().exec(message);
     const joke: string | null = match !== null ? match[1].trim() : null;
