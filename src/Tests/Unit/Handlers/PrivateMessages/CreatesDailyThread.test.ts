@@ -82,5 +82,5 @@ describe(CreatesDailyThread, () => {
     expect(featuredTypeArgument).toBe("Local");
   });
 
-  it("permits only community moderators to post");
+  it.todo("permits only community moderators to post");
 });
