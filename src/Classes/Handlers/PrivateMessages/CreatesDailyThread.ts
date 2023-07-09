@@ -1,10 +1,8 @@
 import { stripIndents } from "common-tags";
 import { provide } from "inversify-binding-decorators";
-import { BotActions } from "lemmy-bot";
 import { Person } from "lemmy-js-client";
 import moment from "moment";
 import { DeterminesIfUserModeratesCommunity } from "../../Services/DeterminesIfUserModeratesCommunity.js";
-import { Configuration } from "../../ValueObjects/Configuration.js";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 import { HandlesPrivateMessage } from "../HandlesPrivateMessage.js";
 
@@ -13,7 +11,6 @@ export class CreatesDailyThread implements HandlesPrivateMessage {
   private communityName = "cafe";
 
   constructor(
-    private readonly configuration: Configuration,
     private readonly client: LemmyApi,
     private readonly determinesIfUserModeratesCommunity: DeterminesIfUserModeratesCommunity
   ) {}
