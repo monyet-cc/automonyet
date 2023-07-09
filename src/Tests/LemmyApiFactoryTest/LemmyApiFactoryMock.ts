@@ -1,6 +1,6 @@
 import { LemmyApi } from "../../Classes/ValueObjects/LemmyApi";
 import { CreatePost, Person, PostFeatureType } from "lemmy-js-client";
-import { mock, when } from "ts-mockito";
+import { instance, mock, when } from "ts-mockito";
 import { communityModViewMock, personAggMock } from "./LemmyApiFactoryMockData";
 
 export const LemmyApiMock = (
@@ -27,5 +27,5 @@ export const LemmyApiMock = (
     moderates: [communityModViewMock(person)],
   });
 
-  return mockApi;
+  return instance(mockApi);
 };

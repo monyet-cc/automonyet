@@ -5,7 +5,8 @@ describe("LemmyApiMock", () => {
   it("create post", async () => {
     const apiMock = LemmyApiMock(createDTPostMock, "Local", personMock);
 
-    const postId = apiMock.createPost(createDTPostMock);
+    const postId = await apiMock.createPost(createDTPostMock);
+    console.log(postId);
 
     expect(Number.isInteger(postId)).toBe(true);
   });
