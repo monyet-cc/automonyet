@@ -1,20 +1,24 @@
+import { injectable } from "inversify";
 import { LemmyHttp } from "lemmy-js-client";
-import { Configuration } from "../ValueObjects/Configuration";
-import { LemmyApi } from "../ValueObjects/LemmyApi";
+import { Configuration } from "../ValueObjects/Configuration.js";
+import { LemmyApi } from "../ValueObjects/LemmyApi.js";
 
+@injectable()
 export class LemmyApiFactory {
-  public static async create(configuration: Configuration): Promise<LemmyApi> {
-    const client: LemmyHttp = new LemmyHttp(configuration.instance.url);
+  constructor(private configuration: Configuration) {}
+
+  public async create(): Promise<LemmyApi> {
+    const client: LemmyHttp = new LemmyHttp(this.configuration.instance.url);
     const token = (
       await client.login({
-        username_or_email: configuration.bot.username,
-        password: configuration.bot.password,
+        username_or_email: this.configuration.bot.username,
+        password: this.configuration.bot.password,
       })
     ).jwt;
 
     if (token === undefined) {
       throw new Error(
-        `Unable to authenticate with instance API ${configuration.instance.url}`
+        `Unable to authenticate with instance API ${this.configuration.instance.url}`
       );
     }
 

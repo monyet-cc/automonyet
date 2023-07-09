@@ -1,7 +1,6 @@
 {
   "env": {
-    "browser": true,
-    "es2021": true
+    "es2022": true
   },
   "extends": [
     "eslint:recommended",
@@ -14,11 +13,18 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint",
+    "file-extension-in-import-ts"
+  ],
   "rules": {
     "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-explicit-any": "off",
+    "file-extension-in-import-ts/file-extension-in-import-ts": "error"
   },
-  "ignorePatterns": ["node_modules/**", "dist/**"]
+  "ignorePatterns": [
+    "node_modules/**",
+    "dist/**"
+  ]
 }
 

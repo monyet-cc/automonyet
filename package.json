@@ -7,6 +7,7 @@
       "email": "noreply@helkarakse.com"
     }
   ],
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "license": "Proprietary",
@@ -22,28 +23,32 @@
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
     "@types/node": "^20.3.3",
+    "@babel/plugin-transform-modules-commonjs": "^7.22.5",
+    "@babel/preset-env": "^7.22.7",
+    "@types/jest": "^29.5.2",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-file-extension-in-import-ts": "^1.0.2",
     "eslint-plugin-prettier": "^4.2.1",
+    "jest": "^29.6.1",
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
+    "ts-jest": "^29.1.1",
+    "ts-mockito": "^2.6.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.22.5",
-    "@babel/preset-env": "^7.22.7",
-    "@types/jest": "^29.5.2",
     "common-tags": "^1.8.2",
     "dotenv": "^16.3.1",
-    "jest": "^29.6.1",
+    "inversify": "^6.0.1",
+    "inversify-binding-decorators": "^4.0.0",
     "lemmy-bot": "^0.4.1",
     "lemmy-js-client": "^0.18.1-rc.3",
     "moment": "^2.29.4",
-    "sequelize": "^6.32.1",
-    "ts-jest": "^29.1.1",
-    "ts-mockito": "^2.6.1"
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.32.1"
   },
   "repository": "git@github.com:monyet-cc/automonyet.git"
 }
