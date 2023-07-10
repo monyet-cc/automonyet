@@ -81,6 +81,4 @@ describe(CreatesDailyThread, () => {
     expect(createFeaturedPostFormArgument.body).toInclude(expectedJoke);
     expect(featuredTypeArgument).toBe("Local");
   });
-
-  it.todo("permits only community moderators to post");
 });
