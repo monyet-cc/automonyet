@@ -1,95 +1,115 @@
-import "reflect-metadata";
-import { instance, mock, when, capture, verify } from "ts-mockito";
-import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesIfUserModeratesCommunity.js";
-import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 import {
   Community,
-  CommunityModeratorView,
   GetPersonDetailsResponse,
   Person,
+  PersonView,
 } from "lemmy-js-client";
+import "reflect-metadata";
+import { anything, capture, instance, mock, verify, when } from "ts-mockito";
+import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesIfUserModeratesCommunity.js";
 import { Configuration } from "../../../Classes/ValueObjects/Configuration.js";
+import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 
-describe("Check whether user has moderator permissions for community", () => {
-  it("permits only community moderators to post", async () => {
-    //test data
-    const expectedCommunityName = "cafe";
-    const expectedInstanceId = 1;
+describe(DeterminesIfUserModeratesCommunity, () => {
+  const moderatorUserData = (() => {
+    const personMock = mock<Person>();
+    const personInstance: Person = instance(personMock);
+    const regularUser: Person = { ...personInstance, name: "regular user" };
+    const cafeModerator: Person = { ...personInstance, name: "cafe moderator" };
+    const otherCommunityModerator: Person = {
+      ...personInstance,
+      name: "other community mod",
+    };
 
     const communityMock = mock<Community>();
-    const cafeCommunity: Community = instance(communityMock);
-    cafeCommunity.id = 100;
-    cafeCommunity.name = "cafe";
-    cafeCommunity.instance_id = 1;
+    const communityInstance: Community = instance(communityMock);
+    const cafeCommunity: Community = {
+      ...communityInstance,
+      id: 100,
+      name: "cafe",
+      instance_id: 1,
+    };
+    const otherCommunity: Community = {
+      ...communityInstance,
+      id: 101,
+      name: "other",
+      instance_id: 2,
+    };
 
-    const otherCommunity: Community = instance(communityMock);
-    otherCommunity.id = 101;
-    otherCommunity.name = "other";
-    otherCommunity.instance_id = 2;
+    const regularUserResponse: GetPersonDetailsResponse = {
+      person_view: instance<PersonView>(mock<PersonView>()),
+      posts: [],
+      comments: [],
+      moderates: [],
+    };
 
-    const personMock = mock<Person>();
-    const regularUser: Person = instance(personMock);
-    regularUser.name = "regular user";
-    const cafeModerator: Person = instance(personMock);
-    cafeModerator.name = "cafe moderator";
-    const otherCommunityModerator: Person = instance(personMock);
-    otherCommunityModerator.name = "other community mod";
+    const cafeModeratorResponse: GetPersonDetailsResponse = {
+      ...regularUserResponse,
+      moderates: [
+        {
+          community: cafeCommunity,
+          moderator: cafeModerator,
+        },
+      ],
+    };
 
-    const personDetailsReponseMock = mock<GetPersonDetailsResponse>();
-    const regularUserDetails: GetPersonDetailsResponse = instance(
-      personDetailsReponseMock
-    );
-    regularUserDetails.moderates = [];
+    const otherCommunityModeratorResponse: GetPersonDetailsResponse = {
+      ...regularUserResponse,
+      moderates: [
+        {
+          community: otherCommunity,
+          moderator: otherCommunityModerator,
+        },
+      ],
+    };
 
-    const cafeModeratorUserDetails: GetPersonDetailsResponse = instance(
-      personDetailsReponseMock
-    );
-    cafeModeratorUserDetails.moderates = [
+    return [
       {
-        community: cafeCommunity,
-        moderator: cafeModerator,
+        person: regularUser,
+        response: regularUserResponse,
+        isPermitted: false,
+      },
+      {
+        person: cafeModerator,
+        response: cafeModeratorResponse,
+        isPermitted: true,
+      },
+      {
+        person: otherCommunityModerator,
+        response: otherCommunityModeratorResponse,
+        isPermitted: false,
       },
     ];
+  })();
 
-    const otherCommunityModeratorUserDetails: GetPersonDetailsResponse =
-      instance(personDetailsReponseMock);
-    otherCommunityModeratorUserDetails.moderates = [
-      {
-        community: otherCommunity,
-        moderator: otherCommunityModerator,
-      },
-    ];
+  const expectedCommunityName = "cafe";
 
-    const configMock = mock(Configuration);
-    const clientMock = mock(LemmyApi);
+  describe.each(moderatorUserData)(
+    "Check whether user has moderator permissions for community",
+    (data) => {
+      it(`checks if ${data.person.name} has moderator permissions for ${expectedCommunityName}`, async () => {
+        const clientMock = mock(LemmyApi);
 
-    when(clientMock.getDetailsForPerson(regularUser)).thenResolve(
-      regularUserDetails
-    );
+        when(clientMock.getDetailsForPerson(anything())).thenResolve(
+          data.response
+        );
 
-    when(clientMock.getDetailsForPerson(cafeModerator)).thenResolve(
-      cafeModeratorUserDetails
-    );
+        const handler = new DeterminesIfUserModeratesCommunity(
+          Configuration.createFromEnv(),
+          instance(clientMock)
+        );
 
-    when(clientMock.getDetailsForPerson(otherCommunityModerator)).thenResolve(
-      otherCommunityModeratorUserDetails
-    );
+        const isCafeModerator = await handler.handle(
+          data.person,
+          expectedCommunityName
+        );
 
-    const handler = new DeterminesIfUserModeratesCommunity(
-      instance(configMock),
-      instance(clientMock)
-    );
+        verify(clientMock.getDetailsForPerson(data.person)).once();
 
-    const isCafeModerator = await handler.handle(
-      cafeModerator,
-      expectedCommunityName
-    );
-
-    verify(clientMock.getDetailsForPerson(cafeModerator)).once();
-
-    const [user] = capture(clientMock.getDetailsForPerson).last();
-
-    expect(user).toBe(cafeModerator);
-    expect(isCafeModerator).toBe(true);
-  }, 20000);
+        const [personArgument] = capture(clientMock.getDetailsForPerson).last();
+        expect(personArgument).toBe(data.person);
+        expect(isCafeModerator).toBe(data.isPermitted);
+      });
+    }
+  );
 });
