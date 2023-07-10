@@ -8,14 +8,13 @@ export class DeterminesIfUserModeratesCommunity {
   constructor(private configuration: Configuration, private client: LemmyApi) {}
 
   public async handle(person: Person, community: string): Promise<boolean> {
-    const configuration = Configuration.createFromEnv();
     const details = await this.client.getDetailsForPerson(person);
 
     return (
       details.moderates.find(
         (communityModerator: CommunityModeratorView) =>
           communityModerator.community.instance_id ===
-            configuration.instance.id &&
+            this.configuration.instance.id &&
           communityModerator.community.name === community
       ) !== undefined
     );
