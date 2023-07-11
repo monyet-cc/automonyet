@@ -39,4 +39,9 @@ export class LemmyApi {
       auth: this.token,
     });
   }
+
+  async getCommunityIdentifier(name: string): Promise<number> {
+    return (await this.client.getCommunity({ name: name, auth: this.token }))
+      .community_view.community.id;
+  }
 }

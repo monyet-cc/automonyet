@@ -1,4 +1,3 @@
-import { BotActions } from "lemmy-bot";
 import { Person } from "lemmy-js-client";
 
 export interface HandlesPrivateMessage {
@@ -6,5 +5,5 @@ export interface HandlesPrivateMessage {
 
   hasPermission(person: Person): Promise<boolean>;
 
-  handle(message: string, bot: BotActions): Promise<void>;
+  handle(message: string): Promise<void>;
 }
