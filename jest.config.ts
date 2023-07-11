@@ -14,6 +14,7 @@ const jestConfig: JestConfigWithTsJest = {
       },
     ],
   },
+  moduleDirectories: ["node_modules", "src"],
 };
 
 export default jestConfig;
