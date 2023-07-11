@@ -1,10 +1,10 @@
+import "reflect-metadata";
 import {
   Community,
   GetPersonDetailsResponse,
   Person,
   PersonView,
 } from "lemmy-js-client";
-import "reflect-metadata";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
 import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesIfUserModeratesCommunity.js";
 import { Configuration } from "../../../Classes/ValueObjects/Configuration.js";
