@@ -1,11 +1,8 @@
 version: '3'
 services:
   myapp:
+    env_file: .env
     image: automonyet:latest
     restart: unless-stopped
     ports:
       - 3000:3000
-    environment:
-      - BOT_USERNAME=
-      - BOT_PASSWORD=
-      - INSTANCE_URL=
