@@ -6,12 +6,12 @@ COPY package*.json ./
 COPY src/**/ !(src/tests/) /app/src/
 
 RUN yarn install
-
-RUN yarn build
   --prefer-offline \
   --frozen-lockfile \
   --non-interactive \
   --production=false
+
+RUN yarn build
 
 RUN rm -rf node_modules && \
   NODE_ENV=production yarn install \
