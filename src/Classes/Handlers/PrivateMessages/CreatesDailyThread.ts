@@ -29,26 +29,27 @@ export class CreatesDailyThread implements HandlesPrivateMessage {
   public async handle(message: string): Promise<void> {
     const match: RegExpExecArray | null =
       this.getMatchExpression().exec(message);
-    const joke: string | null = match !== null ? match[1].trim() : null;
+    let joke: string | null = match !== null ? match[1].trim() : null;
 
-    if (joke !== null) {
-      const communityIdentifier = await this.client.getCommunityIdentifier(
-        this.communityName
-      );
+    if (!joke) {
+      joke =
+        "knock knock, who's there, no one, no one? because no one put a joke here";
+    }
 
-      await this.client.createFeaturedPost(
-        {
-          name: `/c/café daily chat thread for ${moment().format(
-            "D MMMM YYYY"
-          )}`,
-          body: stripIndents(`Joke of the day:
+    const communityIdentifier = await this.client.getCommunityIdentifier(
+      this.communityName
+    );
+
+    await this.client.createFeaturedPost(
+      {
+        name: `/c/café daily chat thread for ${moment().format("D MMMM YYYY")}`,
+        body: stripIndents(`Joke of the day:
 
           ${joke}
           `),
-          community_id: communityIdentifier,
-        },
-        "Local"
-      );
-    }
+        community_id: communityIdentifier,
+      },
+      "Local"
+    );
   }
 }
