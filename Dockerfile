@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY src/**/ !(src/tests/) /app/src/
 
-RUN yarn install
+RUN yarn install \
   --prefer-offline \
   --frozen-lockfile \
   --non-interactive \
