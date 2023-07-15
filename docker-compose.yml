@@ -4,5 +4,3 @@ services:
     env_file: .env
     image: automonyet:latest
     restart: unless-stopped
-    volumes:
-      - /etc/timezone:/etc/timezone:ro

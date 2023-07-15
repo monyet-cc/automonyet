@@ -21,6 +21,12 @@ RUN rm -rf node_modules && \
 
 FROM node:lts-alpine
 
+# Install tzdata package
+RUN apk add --no-cache tzdata
+
+# Set the timezone to Asia/Kuala_Lumpur
+ENV TZ=Asia/Kuala_Lumpur
+
 WORKDIR /app
 
 COPY --from=builder /app  .
