@@ -2,8 +2,7 @@ FROM node:18 as builder
 
 WORKDIR /app
 
-COPY package*.json ./
-COPY src/**/ !(src/tests/) /app/src/
+COPY . .
 
 RUN yarn install \
   --prefer-offline \
