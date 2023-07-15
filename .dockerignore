@@ -1,0 +1,7 @@
+src/Tests
+.github
+.env.example
+.eslintrc.json
+.gitignore
+Dockerfile
+README.md 
