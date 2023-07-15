@@ -1,1 +1,10 @@
 src/Tests
+.github
+.env.example
+.eslintrc.json
+.gitignore
+Dockerfile
+global.d.ts 
+jest.config.ts
+README.md 
+ts.config.json
