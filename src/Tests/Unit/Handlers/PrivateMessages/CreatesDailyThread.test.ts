@@ -14,139 +14,88 @@ import { DeterminesIfUserModeratesCommunity } from "../../../../Classes/Services
 import { LemmyApi } from "../../../../Classes/ValueObjects/LemmyApi.js";
 
 describe(CreatesDailyThread, () => {
-  it("creates the daily thread", async () => {
-    const expectedPostId = 1;
-    const expectedCommunityId = 100;
-    const expectedCommunityName = "cafe";
-    const expectedJoke = "Test joke here";
+  const DTTestCases = (() => {
+    return [
+      {
+        jokeInput: `automod daily joke: Test joke here`,
+        expectedJoke: "Test joke here",
+      },
+      {
+        jokeInput: `automod daily joke:`,
+        expectedJoke:
+          "knock knock, who's there, no one, no one? because no one put a joke here",
+      },
+    ];
+  })();
 
-    const clientMock = mock(LemmyApi);
-    const determinesIfUserModeratesCommunityMock = mock(
-      DeterminesIfUserModeratesCommunity
-    );
+  const expectedPostId = 1;
+  const expectedCommunityId = 100;
+  const expectedCommunityName = "cafe";
 
-    when(clientMock.createFeaturedPost(anything(), "Local")).thenResolve(
-      expectedPostId
-    );
+  describe.each(DTTestCases)("Creates Daily Thread", (testCase) => {
+    it("creates daily thread based on joke input given", async () => {
+      const clientMock = mock(LemmyApi);
+      const determinesIfUserModeratesCommunityMock = mock(
+        DeterminesIfUserModeratesCommunity
+      );
 
-    when(clientMock.getCommunityIdentifier(expectedCommunityName)).thenResolve(
-      expectedCommunityId
-    );
+      when(clientMock.createFeaturedPost(anything(), "Local")).thenResolve(
+        expectedPostId
+      );
 
-    when(
-      determinesIfUserModeratesCommunityMock.handle(
-        anything(),
-        expectedCommunityName
-      )
-    ).thenResolve(true);
+      when(
+        clientMock.getCommunityIdentifier(expectedCommunityName)
+      ).thenResolve(expectedCommunityId);
 
-    const handler = new CreatesDailyThread(
-      instance(clientMock),
-      instance(determinesIfUserModeratesCommunityMock)
-    );
+      when(
+        determinesIfUserModeratesCommunityMock.handle(
+          anything(),
+          expectedCommunityName
+        )
+      ).thenResolve(true);
 
-    await handler.handle(`automod daily joke: ${expectedJoke}`);
+      const handler = new CreatesDailyThread(
+        instance(clientMock),
+        instance(determinesIfUserModeratesCommunityMock)
+      );
 
-    verify(clientMock.getCommunityIdentifier(expectedCommunityName)).once();
-    verify(clientMock.createFeaturedPost(anything(), anyString())).once();
+      await handler.handle(testCase.jokeInput);
 
-    // the permission service class is not called when the handle method is called
-    verify(
-      determinesIfUserModeratesCommunityMock.handle(
-        anything(),
-        expectedCommunityName
-      )
-    ).never();
+      verify(clientMock.getCommunityIdentifier(expectedCommunityName)).once();
+      verify(clientMock.createFeaturedPost(anything(), anyString())).once();
 
-    const [communityNameArgument] = capture(
-      clientMock.getCommunityIdentifier
-    ).last();
+      // the permission service class is not called when the handle method is called
+      verify(
+        determinesIfUserModeratesCommunityMock.handle(
+          anything(),
+          expectedCommunityName
+        )
+      ).never();
 
-    expect(communityNameArgument).toBe(expectedCommunityName);
+      const [communityNameArgument] = capture(
+        clientMock.getCommunityIdentifier
+      ).last();
 
-    const [createFeaturedPostFormArgument, featuredTypeArgument] = capture(
-      clientMock.createFeaturedPost
-    ).last();
+      expect(communityNameArgument).toBe(expectedCommunityName);
 
-    expect(createFeaturedPostFormArgument).toHaveProperty("name");
-    expect(createFeaturedPostFormArgument).toHaveProperty("body");
-    expect(createFeaturedPostFormArgument).toHaveProperty(
-      "community_id",
-      expectedCommunityId
-    );
-    expect(createFeaturedPostFormArgument.name).toBe(
-      `/c/café daily chat thread for ${moment().format("D MMMM YYYY")}`
-    );
-    expect(createFeaturedPostFormArgument.body).toInclude("Joke of the day:");
-    expect(createFeaturedPostFormArgument.body).toInclude(expectedJoke);
-    expect(featuredTypeArgument).toBe("Local");
-  });
-  it("creates the daily thread with default name", async () => {
-    const expectedPostId = 1;
-    const expectedCommunityId = 100;
-    const expectedCommunityName = "cafe";
-    const expectedJoke =
-      "knock knock, who's there, no one, no one? because no one put a joke here";
+      const [createFeaturedPostFormArgument, featuredTypeArgument] = capture(
+        clientMock.createFeaturedPost
+      ).last();
 
-    const clientMock = mock(LemmyApi);
-    const determinesIfUserModeratesCommunityMock = mock(
-      DeterminesIfUserModeratesCommunity
-    );
-
-    when(clientMock.createFeaturedPost(anything(), "Local")).thenResolve(
-      expectedPostId
-    );
-
-    when(clientMock.getCommunityIdentifier(expectedCommunityName)).thenResolve(
-      expectedCommunityId
-    );
-
-    when(
-      determinesIfUserModeratesCommunityMock.handle(
-        anything(),
-        expectedCommunityName
-      )
-    ).thenResolve(true);
-
-    const handler = new CreatesDailyThread(
-      instance(clientMock),
-      instance(determinesIfUserModeratesCommunityMock)
-    );
-
-    await handler.handle(`automod daily joke:`);
-
-    verify(clientMock.getCommunityIdentifier(expectedCommunityName)).once();
-    verify(clientMock.createFeaturedPost(anything(), anyString())).once();
-
-    // the permission service class is not called when the handle method is called
-    verify(
-      determinesIfUserModeratesCommunityMock.handle(
-        anything(),
-        expectedCommunityName
-      )
-    ).never();
-
-    const [communityNameArgument] = capture(
-      clientMock.getCommunityIdentifier
-    ).last();
-
-    expect(communityNameArgument).toBe(expectedCommunityName);
-
-    const [createFeaturedPostFormArgument, featuredTypeArgument] = capture(
-      clientMock.createFeaturedPost
-    ).last();
-
-    expect(createFeaturedPostFormArgument).toHaveProperty("name");
-    expect(createFeaturedPostFormArgument).toHaveProperty("body");
-    expect(createFeaturedPostFormArgument).toHaveProperty(
-      "community_id",
-      expectedCommunityId
-    );
-    expect(createFeaturedPostFormArgument.name).toBe(
-      `/c/café daily chat thread for ${moment().format("D MMMM YYYY")}`
-    );
-    expect(createFeaturedPostFormArgument.body).toInclude("Joke of the day:");
-    expect(createFeaturedPostFormArgument.body).toInclude(expectedJoke);
-    expect(featuredTypeArgument).toBe("Local");
+      expect(createFeaturedPostFormArgument).toHaveProperty("name");
+      expect(createFeaturedPostFormArgument).toHaveProperty("body");
+      expect(createFeaturedPostFormArgument).toHaveProperty(
+        "community_id",
+        expectedCommunityId
+      );
+      expect(createFeaturedPostFormArgument.name).toBe(
+        `/c/café daily chat thread for ${moment().format("D MMMM YYYY")}`
+      );
+      expect(createFeaturedPostFormArgument.body).toInclude("Joke of the day:");
+      expect(createFeaturedPostFormArgument.body).toInclude(
+        testCase.expectedJoke
+      );
+      expect(featuredTypeArgument).toBe("Local");
+    });
   });
 });
