@@ -24,9 +24,12 @@ const bot: packages.LemmyBot = new LemmyBot({
   federation: configuration.bot.isLocal ? "local" : "all",
   dbFile: "database.sqlite3",
   handlers: {
-    privateMessage: async (bot) => {
-      const privateMessage = bot.messageView.private_message.content;
-      const messageOrigin = bot.messageView.creator.name;
+    privateMessage: async ({
+      messageView: { private_message, creator },
+      botActions: { sendPrivateMessage },
+    }) => {
+      const privateMessage = private_message.content;
+      const messageOrigin = creator.name;
       const matchingHandler: HandlesPrivateMessage | undefined =
         privateMessageHandlers.find((value: HandlesPrivateMessage) =>
           value.getMatchExpression().exec(privateMessage)
@@ -36,18 +39,26 @@ const bot: packages.LemmyBot = new LemmyBot({
         console.info(
           `Received private message ${privateMessage} from ${messageOrigin}, but no handlers were matched`
         );
+        sendPrivateMessage({
+          recipient_id: creator.id,
+          content:
+            "Sorry, I do not recognize the command you have entered. Please try again!",
+        });
       }
 
       if (matchingHandler !== undefined) {
         // ensure that the handler's permission requirement is met
-        const hasPermission = await matchingHandler.hasPermission(
-          bot.messageView.creator
-        );
+        const hasPermission = await matchingHandler.hasPermission(creator);
 
         if (!hasPermission) {
           console.warn(
             `${messageOrigin} attempted to trigger ${matchingHandler.constructor.name} without the necessary permissions`
           );
+          sendPrivateMessage({
+            recipient_id: creator.id,
+            content:
+              "Sorry, you do not have the required permissions to execute this command.",
+          });
         }
 
         if (hasPermission) {
@@ -56,6 +67,11 @@ const bot: packages.LemmyBot = new LemmyBot({
           );
 
           await matchingHandler.handle(privateMessage);
+
+          sendPrivateMessage({
+            recipient_id: creator.id,
+            content: "Your daily thread post has been created successfully!",
+          });
         }
       }
     },
