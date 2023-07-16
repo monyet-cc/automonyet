@@ -21,7 +21,26 @@ describe(CreatesDailyThread, () => {
         expectedJoke: "Test joke here",
       },
       {
+        jokeInput: `automod daily joke Test joke here`,
+        expectedJoke: "Test joke here",
+      },
+      {
         jokeInput: `automod daily joke:`,
+        expectedJoke:
+          "knock knock, who's there, no one, no one? because no one put a joke here",
+      },
+      {
+        jokeInput: `automod daily joke: `,
+        expectedJoke:
+          "knock knock, who's there, no one, no one? because no one put a joke here",
+      },
+      {
+        jokeInput: `automod daily joke`,
+        expectedJoke:
+          "knock knock, who's there, no one, no one? because no one put a joke here",
+      },
+      {
+        jokeInput: `automod daily joke `,
         expectedJoke:
           "knock knock, who's there, no one, no one? because no one put a joke here",
       },
