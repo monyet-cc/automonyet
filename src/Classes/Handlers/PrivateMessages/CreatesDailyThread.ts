@@ -16,7 +16,7 @@ export class CreatesDailyThread implements HandlesPrivateMessage {
   ) {}
 
   public getMatchExpression(): RegExp {
-    return /^automod daily joke:?(.*?)(?:;|$)/;
+    return /^automod daily joke:?([\s\S]*)$/;
   }
 
   public async hasPermission(person: Person): Promise<boolean> {
