@@ -70,7 +70,7 @@ const bot: packages.LemmyBot = new LemmyBot({
 
           sendPrivateMessage({
             recipient_id: creator.id,
-            content: `Your daily thread post has been created successfully!`,
+            content: "Your daily thread post has been created successfully!",
           });
         }
       }
