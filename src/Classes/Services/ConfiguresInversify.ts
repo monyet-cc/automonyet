@@ -4,6 +4,7 @@ import { buildProviderModule } from "inversify-binding-decorators";
 import { LemmyApiFactory } from "../Factories/LemmyApiFactory.js";
 import { Configuration } from "../ValueObjects/Configuration.js";
 import { LemmyApi } from "../ValueObjects/LemmyApi.js";
+import { AutomatesFeaturedPost } from "./AutomatesFeaturedPost.js";
 
 dotenv.config();
 

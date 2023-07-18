@@ -4,6 +4,7 @@ import { HandlesPrivateMessage } from "./Classes/Handlers/HandlesPrivateMessage.
 import { CreatesDailyThread } from "./Classes/Handlers/PrivateMessages/CreatesDailyThread.js";
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
+import { AutomatesFeaturedPost } from "./Classes/Services/AutomatesFeaturedPost.js";
 
 const { LemmyBot } = packages;
 
@@ -13,6 +14,11 @@ const configuration = container.get<Configuration>(Configuration);
 const privateMessageHandlers: HandlesPrivateMessage[] = [
   container.get<HandlesPrivateMessage>(CreatesDailyThread),
 ];
+
+// initialise services
+const automatesFeaturedPost: AutomatesFeaturedPost = container.get(
+  AutomatesFeaturedPost
+);
 
 // initialise the bot
 const bot: packages.LemmyBot = new LemmyBot({
@@ -76,7 +82,7 @@ const bot: packages.LemmyBot = new LemmyBot({
       }
     },
   },
-  schedule: [],
+  schedule: automatesFeaturedPost.createBotTasks(),
 });
 
 bot.start();

@@ -23,10 +23,18 @@ export class LemmyApi {
   ): Promise<number> {
     const postIdentifier = await this.createPost(post);
 
+    return this.featurePost(postIdentifier, featuredType, true);
+  }
+
+  async featurePost(
+    postIdentifier: number,
+    featuredType: "Local" | "Community",
+    featurePost: boolean
+  ): Promise<number> {
     return (
       await this.client.featurePost({
         post_id: postIdentifier,
-        featured: true,
+        featured: featurePost,
         feature_type: featuredType,
         auth: this.token,
       })
