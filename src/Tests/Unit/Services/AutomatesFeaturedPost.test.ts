@@ -4,6 +4,7 @@ import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 import { AutomatesFeaturedPost } from "../../../Classes/Services/AutomatesFeaturedPost.js";
 import { type } from "os";
 import { BotTask } from "lemmy-bot";
+import moment from "moment";
 
 describe(AutomatesFeaturedPost, () => {
   it("Creates Daily Thread Post", async () => {
@@ -44,7 +45,7 @@ describe(AutomatesFeaturedPost, () => {
       expectedCommunityId
     );
     expect(createFeaturedPostFormArgument.name).toBe(
-      service.generatePostTitle(postCategory)
+      `/c/café daily chat thread for ${moment().format("D MMMM YYYY")}`
     );
     expect(featuredTypeArgument).toBe("Community");
   });

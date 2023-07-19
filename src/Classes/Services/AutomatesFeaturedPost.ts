@@ -2,10 +2,11 @@ import { provide } from "inversify-binding-decorators";
 import moment from "moment";
 import { LemmyApi } from "../ValueObjects/LemmyApi.js";
 import { BotTask } from "lemmy-bot";
+import { PostgresClient } from "../ValueObjects/PostgresClient.js";
 
 @provide(AutomatesFeaturedPost)
 export class AutomatesFeaturedPost {
-  public postsToCreate = [
+  private postsToCreate = [
     {
       category: "Daily Chat Thread",
       communityName: "cafe",
@@ -16,9 +17,12 @@ export class AutomatesFeaturedPost {
     },
   ];
 
-  constructor(private readonly client: LemmyApi) {}
+  constructor(
+    private readonly client: LemmyApi,
+    private readonly dbclient: PostgresClient
+  ) {}
 
-  public generatePostTitle = (category: string): string => {
+  private generatePostTitle = (category: string): string => {
     switch (category) {
       case "Daily Chat Thread":
         return `/c/café daily chat thread for ${moment().format(
@@ -68,9 +72,6 @@ export class AutomatesFeaturedPost {
       await this.client.featurePost(postIdentifier, "Local", true);
     }
 
-    setTimeout(async () => {
-      await this.client.featurePost(postIdentifier, "Local", false);
-      await this.client.featurePost(postIdentifier, "Community", false);
-    }, 24 * 60 * 60 * 1000); // 1 day in milliseconds
+    //save postId in db
   }
 }
