@@ -1,11 +1,6 @@
 import { provide } from "inversify-binding-decorators";
 import { PostgresClient } from "../ValueObjects/PostgresClient.js";
 
-interface postToRemove {
-  postId: number;
-  isLocallyPinned: boolean;
-}
-
 @provide(PostgresService)
 export class PostgresService {
   constructor(private client: PostgresClient) {}
@@ -48,7 +43,28 @@ export class PostgresService {
     }
   };
 
-  public removeOverduePins = async () => {
+  public fetchOverduePins = async () => {
+    try {
+      const pinsToRemove = await this.handleOverduePins();
+
+      //if able to fetch pins to remove successfully, proceed with deletion
+      if (!pinsToRemove) {
+        const deleteOverduePostPins = `
+        DELETE FROM PostPinDuration
+        WHERE remainingDays <= 0;
+      `;
+        await this.client.query(deleteOverduePostPins);
+      }
+
+      return pinsToRemove;
+    } catch (err) {
+      console.error("Error:", err);
+    } finally {
+      await this.client.end();
+    }
+  };
+
+  public handleOverduePins = async () => {
     try {
       await this.client.connect();
 
