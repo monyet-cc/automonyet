@@ -16,7 +16,10 @@ export class PostgresService {
         `;
       await this.client.query(initDbQuery);
     } catch (err) {
-      console.error("Error:", err);
+      console.error(
+        "Error: failed to create schema and tables required for lemmy bot. ",
+        err
+      );
     } finally {
       await this.client.end();
     }
@@ -37,28 +40,7 @@ export class PostgresService {
       `;
       await this.client.query(setPostPinDurationQuery, params);
     } catch (err) {
-      console.error("Error:", err);
-    } finally {
-      await this.client.end();
-    }
-  };
-
-  public fetchOverduePins = async () => {
-    try {
-      const pinsToRemove = await this.handleOverduePins();
-
-      //if able to fetch pins to remove successfully, proceed with deletion
-      if (!pinsToRemove) {
-        const deleteOverduePostPins = `
-        DELETE FROM PostPinDuration
-        WHERE remainingDays <= 0;
-      `;
-        await this.client.query(deleteOverduePostPins);
-      }
-
-      return pinsToRemove;
-    } catch (err) {
-      console.error("Error:", err);
+      console.error("Error: failed to set post for auto removal. ", err);
     } finally {
       await this.client.end();
     }
@@ -67,6 +49,8 @@ export class PostgresService {
   public handleOverduePins = async () => {
     try {
       await this.client.connect();
+
+      await this.client.query("BEGIN");
 
       // reduce post pin duration by one day
       const updatePostPinDurationQuery = `
@@ -83,9 +67,18 @@ export class PostgresService {
         WHERE remainingDays <= 0;
       `;
       const result = await this.client.query(fetchOverduePostPins);
+
+      const deleteOverduePostPins = `
+      DELETE FROM PostPinDuration
+      WHERE remainingDays <= 0;
+    `;
+      await this.client.query(deleteOverduePostPins);
+      await this.client.query("COMMIT");
+
       return result.rows;
     } catch (err) {
-      console.error("Error:", err);
+      await this.client.query("ROLLBACK");
+      console.error("Error: failed to handle overdue pinned posts. ", err);
     } finally {
       await this.client.end();
     }
