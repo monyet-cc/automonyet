@@ -82,7 +82,7 @@ export class AutomatesFeaturedPost {
 
     //save postId in db
     if (matchingPostType.daysToPin > 0) {
-      this.dbservice.setPostAutoRemoval(
+      await this.dbservice.setPostAutoRemoval(
         postIdentifier,
         matchingPostType.daysToPin,
         matchingPostType.pinLocally

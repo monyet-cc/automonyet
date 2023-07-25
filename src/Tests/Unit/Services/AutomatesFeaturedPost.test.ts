@@ -2,9 +2,8 @@ import "reflect-metadata";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
 import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 import { AutomatesFeaturedPost } from "../../../Classes/Services/AutomatesFeaturedPost.js";
-import { type } from "os";
-import { BotTask } from "lemmy-bot";
 import moment from "moment";
+import { PostgresService } from "../../../Classes/Services/PostgresService.js";
 
 describe(AutomatesFeaturedPost, () => {
   it("Creates Daily Thread Post", async () => {
@@ -14,6 +13,7 @@ describe(AutomatesFeaturedPost, () => {
     const postCategory = "Daily Chat Thread";
 
     const clientMock = mock(LemmyApi);
+    const postgresServiceMock = mock(PostgresService);
 
     when(clientMock.getCommunityIdentifier("cafe")).thenResolve(
       expectedCommunityId
@@ -23,9 +23,16 @@ describe(AutomatesFeaturedPost, () => {
       expectedPostId
     );
 
-    const service = new AutomatesFeaturedPost(instance(clientMock));
+    when(
+      postgresServiceMock.setPostAutoRemoval(anything(), anything(), anything())
+    ).thenResolve();
 
-    await service.handlePost(postCategory);
+    const service = new AutomatesFeaturedPost(
+      instance(clientMock),
+      instance(postgresServiceMock)
+    );
+
+    await service.handlePostCreation(postCategory);
 
     verify(clientMock.getCommunityIdentifier(expectedCommunityName)).once();
     verify(clientMock.createFeaturedPost(anything(), "Community")).once();

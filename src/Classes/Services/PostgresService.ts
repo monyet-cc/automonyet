@@ -5,7 +5,7 @@ import { PostgresClient } from "../ValueObjects/PostgresClient.js";
 export class PostgresService {
   constructor(private client: PostgresClient) {}
 
-  public initDBSchema = async () => {
+  async initDBSchema(): Promise<void> {
     try {
       await this.client.connect();
 
@@ -23,13 +23,13 @@ export class PostgresService {
     } finally {
       await this.client.end();
     }
-  };
+  }
 
-  public setPostAutoRemoval = async (
+  async setPostAutoRemoval(
     postId: number,
     remainingDays: number,
     isLocallyPinned: boolean
-  ) => {
+  ): Promise<void> {
     try {
       await this.client.connect();
       const params = [postId, remainingDays, isLocallyPinned];
@@ -44,9 +44,9 @@ export class PostgresService {
     } finally {
       await this.client.end();
     }
-  };
+  }
 
-  public handleOverduePins = async () => {
+  async handleOverduePins() {
     try {
       await this.client.connect();
 
@@ -82,5 +82,5 @@ export class PostgresService {
     } finally {
       await this.client.end();
     }
-  };
+  }
 }
