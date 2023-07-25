@@ -5,7 +5,7 @@ import { PostgresClient } from "../ValueObjects/PostgresClient.js";
 export class PostgresService {
   constructor(private client: PostgresClient) {}
 
-  public initDB = async () => {
+  public initDBSchema = async () => {
     try {
       await this.client.connect();
 

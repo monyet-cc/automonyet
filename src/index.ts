@@ -5,10 +5,13 @@ import { CreatesDailyThread } from "./Classes/Handlers/PrivateMessages/CreatesDa
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
 import { AutomatesFeaturedPost } from "./Classes/Services/AutomatesFeaturedPost.js";
+import { PostgresClient } from "./Classes/ValueObjects/PostgresClient.js";
+import { PostgresService } from "./Classes/Services/PostgresService.js";
 
 const { LemmyBot } = packages;
 
 const configuration = container.get<Configuration>(Configuration);
+const postgresClient = container.get<PostgresClient>(PostgresClient);
 
 // initialise the private message handlers
 const privateMessageHandlers: HandlesPrivateMessage[] = [
@@ -19,6 +22,9 @@ const privateMessageHandlers: HandlesPrivateMessage[] = [
 const automatesFeaturedPost: AutomatesFeaturedPost = container.get(
   AutomatesFeaturedPost
 );
+
+// initialise database
+new PostgresService(postgresClient).initDBSchema();
 
 // initialise the bot
 const bot: packages.LemmyBot = new LemmyBot({
