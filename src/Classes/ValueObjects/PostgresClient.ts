@@ -16,6 +16,7 @@ export class PostgresClient extends pg.Client {
     try {
       await client.connect();
       console.log("Connected to PostgreSQL database");
+      await client.end();
       return client;
     } catch (err) {
       console.error("Error connecting to PostgreSQL database:", err);
