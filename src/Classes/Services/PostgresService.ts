@@ -1,6 +1,11 @@
 import { provide } from "inversify-binding-decorators";
 import { PostgresClient } from "../ValueObjects/PostgresClient.js";
 
+export type OverduePostPin = {
+  postId: number;
+  isLocallyPinned: boolean;
+};
+
 @provide(PostgresService)
 export class PostgresService {
   constructor(private client: PostgresClient) {}
@@ -46,7 +51,7 @@ export class PostgresService {
     }
   }
 
-  async handleOverduePins() {
+  async handleOverduePins(): Promise<OverduePostPin[] | undefined> {
     try {
       await this.client.connect();
 

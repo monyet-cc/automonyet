@@ -34,6 +34,10 @@ export class AutomatesFeaturedPost {
     }
   };
 
+  public getPostsToCreate() {
+    return this.postsToCreate;
+  }
+
   public createBotTasks = (): BotTask[] => {
     const botTasks: BotTask[] = [];
     for (const post of this.postsToCreate) {
