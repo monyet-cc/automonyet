@@ -1,5 +1,7 @@
 import { provide } from "inversify-binding-decorators";
-import { PostgresClient } from "../ValueObjects/PostgresClient.js";
+import { pgClientPool as pool } from "./PgClientPool.js";
+import pg from "pg";
+import { pgClientConfig } from "../ValueObjects/PostgresClientConfiguration.js";
 
 export type OverduePostPin = {
   postId: number;
@@ -8,25 +10,22 @@ export type OverduePostPin = {
 
 @provide(PostgresService)
 export class PostgresService {
-  constructor(private client: PostgresClient) {}
-
   async initDBSchema(): Promise<void> {
+    const client = await pool.connect();
     try {
-      await this.client.connect();
-
       // Initialize schema and tables if not created
       const initDbQuery = `
           CREATE SCHEMA IF NOT EXISTS LemmyBot AUTHORIZATION lemmy;
           CREATE TABLE IF NOT EXISTS PostPinDuration (postId integer, remainingDays numeric(4, 0), isLocallyPinned boolean);
         `;
-      await this.client.query(initDbQuery);
+      await client.query(initDbQuery);
     } catch (err) {
       console.error(
         "Error: failed to create schema and tables required for lemmy bot. ",
         err
       );
     } finally {
-      await this.client.end();
+      client.release();
     }
   }
 
@@ -35,27 +34,27 @@ export class PostgresService {
     remainingDays: number,
     isLocallyPinned: boolean
   ): Promise<void> {
+    const client = await pool.connect();
     try {
-      await this.client.connect();
       const params = [postId, remainingDays, isLocallyPinned];
       // specifies how long a post should be pinned
       const setPostPinDurationQuery = `
         INSERT INTO PostPinDuration (postId, remainingDays, isLocallyPinned)
         VALUES ($1, $2, $3);
       `;
-      await this.client.query(setPostPinDurationQuery, params);
+      await client.query(setPostPinDurationQuery, params);
     } catch (err) {
       console.error("Error: failed to set post for auto removal. ", err);
     } finally {
-      await this.client.end();
+      client.release();
     }
   }
 
   async handleOverduePins(): Promise<OverduePostPin[] | undefined> {
-    try {
-      await this.client.connect();
+    const client = new pg.Client(pgClientConfig);
 
-      await this.client.query("BEGIN");
+    try {
+      await client.query("BEGIN");
 
       // reduce post pin duration by one day
       const updatePostPinDurationQuery = `
@@ -63,7 +62,7 @@ export class PostgresService {
           SET remainingDays = (remainingDays - 1)
           WHERE remainingDays > 0;
         `;
-      await this.client.query(updatePostPinDurationQuery);
+      await client.query(updatePostPinDurationQuery);
 
       // fetch posts that should be unpinned
       const fetchOverduePostPins = `
@@ -71,21 +70,21 @@ export class PostgresService {
         FROM PostPinDuration
         WHERE remainingDays <= 0;
       `;
-      const result = await this.client.query(fetchOverduePostPins);
+      const result = await client.query(fetchOverduePostPins);
 
       const deleteOverduePostPins = `
       DELETE FROM PostPinDuration
       WHERE remainingDays <= 0;
     `;
-      await this.client.query(deleteOverduePostPins);
-      await this.client.query("COMMIT");
+      await client.query(deleteOverduePostPins);
+      await client.query("COMMIT");
 
       return result.rows;
     } catch (err) {
-      await this.client.query("ROLLBACK");
+      await client.query("ROLLBACK");
       console.error("Error: failed to handle overdue pinned posts. ", err);
     } finally {
-      await this.client.end();
+      await client.end();
     }
   }
 }
