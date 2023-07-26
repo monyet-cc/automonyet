@@ -5,6 +5,7 @@ import { CreatesDailyThread } from "./Classes/Handlers/PrivateMessages/CreatesDa
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
 import { AutomatesFeaturedPost } from "./Classes/Services/AutomatesFeaturedPost.js";
+import { PostgresService } from "./Classes/Services/PostgresService.js";
 
 const { LemmyBot } = packages;
 
@@ -21,6 +22,7 @@ const automatesFeaturedPost: AutomatesFeaturedPost = container.get(
 );
 
 // initialise database
+await new PostgresService().initDBSchema();
 
 // initialise the bot
 const bot: packages.LemmyBot = new LemmyBot({
