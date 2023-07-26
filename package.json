@@ -48,7 +48,7 @@
     "lemmy-bot": "^0.4.1",
     "lemmy-js-client": "^0.18.1-rc.3",
     "moment": "^2.29.4",
-    "pg": "^8.11.1",
+    "pg": "8.2.x",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.32.1"
   },

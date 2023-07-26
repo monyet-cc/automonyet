@@ -1,6 +1,5 @@
-import { Client } from "pg";
-
-export class PostgresClient extends Client {
+import pg from "pg";
+export class PostgresClient extends pg.Client {
   constructor() {
     super({
       user: process.env.PG_USER,
