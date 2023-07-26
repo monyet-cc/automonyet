@@ -8,3 +8,9 @@ services:
      - .env
     image: automonyet:latest
     restart: unless-stopped
+    networks:
+      - monyet_default
+      
+networks:
+  monyet_default:
+    external: true
