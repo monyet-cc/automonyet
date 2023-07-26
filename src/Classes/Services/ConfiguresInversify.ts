@@ -10,7 +10,7 @@ dotenv.config();
 
 const container = new Container();
 const configuration = Configuration.createFromEnv();
-const dbClient = PostgresClient.initPostgresClient();
+const dbClient = await PostgresClient.initPostgresClient();
 container.bind<Configuration>(Configuration).toConstantValue(configuration);
 container.bind<PostgresClient>(PostgresClient).toConstantValue(dbClient);
 container

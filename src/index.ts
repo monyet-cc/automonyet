@@ -24,7 +24,8 @@ const automatesFeaturedPost: AutomatesFeaturedPost = container.get(
 );
 
 // initialise database
-new PostgresService(postgresClient).initDBSchema();
+const initDBClient = new PostgresService(postgresClient);
+await initDBClient.initDBSchema();
 
 // initialise the bot
 const bot: packages.LemmyBot = new LemmyBot({

@@ -11,7 +11,16 @@ export class PostgresClient extends Client {
     });
   }
 
-  static initPostgresClient(): PostgresClient {
-    return new PostgresClient();
+  static async initPostgresClient(): Promise<PostgresClient> {
+    const client = new PostgresClient();
+
+    try {
+      await client.connect();
+      console.log("Connected to PostgreSQL database");
+      return client;
+    } catch (err) {
+      console.error("Error connecting to PostgreSQL database:", err);
+      throw err; // Propagate the error up to the caller if needed
+    }
   }
 }
