@@ -78,7 +78,7 @@ export class PostgresService {
       await client.query("COMMIT");
 
       const overduePostPins: OverduePostPin[] = result.rows.map((row) => ({
-        postId: Number(row.postid),
+        postId: row.postid,
         isLocallyPinned: row.islocallypinned,
       }));
       return overduePostPins;
