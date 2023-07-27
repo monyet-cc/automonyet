@@ -1,7 +1,5 @@
 import { provide } from "inversify-binding-decorators";
 import { pgClientPool as pool } from "./PgClientPool.js";
-import pg from "pg";
-import { pgClientConfig } from "../ValueObjects/PostgresClientConfiguration.js";
 
 export type OverduePostPin = {
   postId: number;
