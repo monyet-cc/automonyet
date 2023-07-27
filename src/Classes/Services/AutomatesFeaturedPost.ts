@@ -12,7 +12,7 @@ export class AutomatesFeaturedPost {
       communityName: "cafe",
       body: undefined,
       pinLocally: true,
-      cronExpression: "0 0 0 * * *",
+      cronExpression: "5 0 0 * * *",
       timezone: "Asia/Kuala_Lumpur",
       daysToPin: 1,
     },
