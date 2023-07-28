@@ -16,6 +16,15 @@ export class AutomatesFeaturedPost {
       timezone: "Asia/Kuala_Lumpur",
       daysToPin: 1,
     },
+    {
+      category: "Daily Food Thread",
+      communityName: "food",
+      body: undefined,
+      pinLocally: false,
+      cronExpression: "5 0 0 * * *",
+      timezone: "Asia/Kuala_Lumpur",
+      daysToPin: 1,
+    },
   ];
 
   constructor(
@@ -29,6 +38,8 @@ export class AutomatesFeaturedPost {
         return `/c/café daily chat thread for ${moment().format(
           "D MMMM YYYY"
         )}`;
+      case "Daily Food Thread":
+        return `/c/café daily chat thread for 28 July 2023`;
       default:
         return "";
     }
