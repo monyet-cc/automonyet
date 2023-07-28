@@ -12,7 +12,7 @@ export class AutomatesFeaturedPost {
       communityName: "cafe",
       body: undefined,
       pinLocally: true,
-      cronExpression: "5 0 0 * * *",
+      cronExpression: "5 0 4 * * *",
       timezone: "Asia/Kuala_Lumpur",
       daysToPin: 1,
     },
@@ -21,7 +21,7 @@ export class AutomatesFeaturedPost {
       communityName: "food",
       body: undefined,
       pinLocally: false,
-      cronExpression: "5 0 0 * * *",
+      cronExpression: "5 0 4 * * *",
       timezone: "Asia/Kuala_Lumpur",
       daysToPin: 1,
     },
@@ -39,7 +39,9 @@ export class AutomatesFeaturedPost {
           "D MMMM YYYY"
         )}`;
       case "Daily Food Thread":
-        return `/c/café daily chat thread for 28 July 2023`;
+        return `Daily c/food Thread - Whatcha Having Today? ${moment().format(
+          "Do MMMM, YYYY"
+        )}`;
       default:
         return "";
     }
@@ -61,7 +63,7 @@ export class AutomatesFeaturedPost {
       });
     }
     botTasks.push({
-      cronExpression: "0 0 0 * * *",
+      cronExpression: "0 0 4 * * *",
       timezone: "Asia/Kuala_Lumpur",
       doTask: async () => {
         return this.removeOverduePins();
