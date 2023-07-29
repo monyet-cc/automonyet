@@ -3,62 +3,31 @@ import moment from "moment";
 import { LemmyApi } from "../ValueObjects/LemmyApi.js";
 import { BotTask } from "lemmy-bot";
 import { PostgresService } from "./PostgresService.js";
+import {
+  postsToAutomate,
+  PostToAutomate,
+} from "../ValueObjects/PostsToAutomate.js";
 
 @provide(AutomatesFeaturedPost)
 export class AutomatesFeaturedPost {
-  private postsToCreate = [
-    {
-      category: "Daily Chat Thread",
-      communityName: "cafe",
-      body: undefined,
-      pinLocally: true,
-      cronExpression: "5 0 4 * * *",
-      timezone: "Asia/Kuala_Lumpur",
-      daysToPin: 1,
-    },
-    {
-      category: "Daily Food Thread",
-      communityName: "food",
-      body: undefined,
-      pinLocally: false,
-      cronExpression: "5 0 4 * * *",
-      timezone: "Asia/Kuala_Lumpur",
-      daysToPin: 1,
-    },
-  ];
-
   constructor(
     private readonly client: LemmyApi,
     private readonly dbservice: PostgresService
   ) {}
 
-  private generatePostTitle = (category: string): string => {
-    switch (category) {
-      case "Daily Chat Thread":
-        return `/c/café daily chat thread for ${moment().format(
-          "D MMMM YYYY"
-        )}`;
-      case "Daily Food Thread":
-        return `Daily c/food Thread - Whatcha Having Today? ${moment().format(
-          "Do MMMM, YYYY"
-        )}`;
-      default:
-        return "";
-    }
+  private generatePostTitle = (title: string, dateFormat: string): string => {
+    const formattedDate = moment().format(dateFormat);
+    return title.replace(/\$date/g, formattedDate);
   };
-
-  public getPostsToCreate() {
-    return this.postsToCreate;
-  }
 
   public createBotTasks = (): BotTask[] => {
     const botTasks: BotTask[] = [];
-    for (const post of this.postsToCreate) {
+    for (const post of postsToAutomate) {
       botTasks.push({
         cronExpression: post.cronExpression,
         timezone: post.timezone,
         doTask: async () => {
-          return this.handlePostCreation(post.category);
+          return this.handlePostCreation(post);
         },
       });
     }
@@ -72,37 +41,29 @@ export class AutomatesFeaturedPost {
     return botTasks;
   };
 
-  public async handlePostCreation(postCategory: string): Promise<void> {
-    const matchingPostType = this.postsToCreate.find((post) => {
-      return post.category === postCategory;
-    });
-
-    if (matchingPostType === undefined) {
-      console.warn("No matching post type found");
-      return;
-    }
+  public async handlePostCreation(post: PostToAutomate): Promise<void> {
     const communityIdentifier = await this.client.getCommunityIdentifier(
-      matchingPostType.communityName
+      post.communityName
     );
 
     const postIdentifier: number = await this.client.createFeaturedPost(
       {
-        name: this.generatePostTitle(postCategory),
+        name: this.generatePostTitle(post.title, post.dateFormat),
         community_id: communityIdentifier,
-        body: undefined,
+        body: post.body,
       },
       "Community"
     );
-    if (matchingPostType.pinLocally) {
+    if (post.pinLocally) {
       await this.client.featurePost(postIdentifier, "Local", true);
     }
 
     //save postId in db
-    if (matchingPostType.daysToPin > 0) {
+    if (post.daysToPin > 0) {
       await this.dbservice.setPostAutoRemoval(
         postIdentifier,
-        matchingPostType.daysToPin,
-        matchingPostType.pinLocally
+        post.daysToPin,
+        post.pinLocally
       );
     }
   }

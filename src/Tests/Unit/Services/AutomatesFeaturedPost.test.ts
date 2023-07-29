@@ -13,13 +13,24 @@ import { AutomatesFeaturedPost } from "../../../Classes/Services/AutomatesFeatur
 import moment from "moment";
 import { PostgresService } from "../../../Classes/Services/PostgresService.js";
 import { OverduePostPin } from "../../../Classes/Services/PostgresService.js";
+import { postsToAutomate } from "../../../Classes/ValueObjects/PostsToAutomate.js";
 
 describe(AutomatesFeaturedPost, () => {
   it("Create Post Handling", async () => {
     const expectedPostId = 1;
     const expectedCommunityId = 100;
     const expectedCommunityName = "cafe";
-    const postCategory = "Daily Chat Thread";
+    const post = {
+      category: "Daily Chat Thread",
+      communityName: "cafe",
+      body: undefined,
+      pinLocally: true,
+      cronExpression: "5 0 4 * * *",
+      timezone: "Asia/Kuala_Lumpur",
+      daysToPin: 1,
+      title: `/c/café daily chat thread for $date`,
+      dateFormat: "D MMMM YYYY",
+    };
 
     const clientMock = mock(LemmyApi);
     const postgresServiceMock = mock(PostgresService);
@@ -32,6 +43,10 @@ describe(AutomatesFeaturedPost, () => {
       expectedPostId
     );
 
+    when(clientMock.featurePost(anything(), anything(), true)).thenResolve(
+      expectedPostId
+    );
+
     when(
       postgresServiceMock.setPostAutoRemoval(anything(), anything(), anything())
     ).thenResolve();
@@ -41,10 +56,11 @@ describe(AutomatesFeaturedPost, () => {
       instance(postgresServiceMock)
     );
 
-    await service.handlePostCreation(postCategory);
+    await service.handlePostCreation(post);
 
     verify(clientMock.getCommunityIdentifier(expectedCommunityName)).once();
     verify(clientMock.createFeaturedPost(anything(), "Community")).once();
+    verify(clientMock.featurePost(anything(), "Local", true)).once();
 
     const [communityNameArgument] = capture(
       clientMock.getCommunityIdentifier
@@ -101,8 +117,41 @@ describe(AutomatesFeaturedPost, () => {
     const scheduledBotTasks = service.createBotTasks();
 
     expect(Array.isArray(scheduledBotTasks)).toBe(true);
-    expect(scheduledBotTasks.length).toBe(
-      service.getPostsToCreate().length + 1
+    expect(scheduledBotTasks.length).toBe(postsToAutomate.length + 1);
+  });
+  it("Generate Post Title", async () => {
+    const dailyThreadTitle = `/c/café daily chat thread for ${moment().format(
+      "D MMMM YYYY"
+    )}`;
+    const dailyFoodThreadTitle = `Daily c/food Thread - Whatcha Having Today? ${moment().format(
+      "Do MMMM, YYYY"
+    )}`;
+
+    const generatePostTitle = (title: string, dateFormat: string): string => {
+      const formattedDate = moment().format(dateFormat);
+
+      // Replace the placeholder "$date" with the formatted date
+      return title.replace(/\$date/g, formattedDate);
+    };
+
+    const DTpost = postsToAutomate.find(
+      (post) => post.category == "Daily Chat Thread"
     );
+
+    const DailyFoodPost = postsToAutomate.find(
+      (post) => post.category == "Daily Food Thread"
+    );
+
+    if (DTpost !== undefined) {
+      expect(generatePostTitle(DTpost?.title, DTpost?.dateFormat)).toBe(
+        dailyThreadTitle
+      );
+    }
+
+    if (DailyFoodPost !== undefined) {
+      expect(
+        generatePostTitle(DailyFoodPost.title, DailyFoodPost.dateFormat)
+      ).toBe(dailyFoodThreadTitle);
+    }
   });
 });
