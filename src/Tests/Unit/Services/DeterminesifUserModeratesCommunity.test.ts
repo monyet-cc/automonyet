@@ -6,7 +6,7 @@ import {
   PersonView,
 } from "lemmy-js-client";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
-import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesIfUserModeratesCommunity.js";
+import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesUserPermissions.js";
 import { Configuration } from "../../../Classes/ValueObjects/Configuration.js";
 import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 

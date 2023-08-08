@@ -20,3 +20,14 @@ export class DeterminesIfUserModeratesCommunity {
     );
   }
 }
+
+@provide(DeterminesIfUserIsAdmin)
+export class DeterminesIfUserIsAdmin {
+  constructor(private configuration: Configuration, private client: LemmyApi) {}
+
+  public async handle(person: Person): Promise<boolean> {
+    const details = await this.client.getDetailsForPerson(person);
+
+    return details.person_view.person.admin;
+  }
+}

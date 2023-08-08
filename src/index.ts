@@ -2,9 +2,10 @@ import packages from "lemmy-bot";
 import "reflect-metadata";
 import { HandlesPrivateMessage } from "./Classes/Handlers/HandlesPrivateMessage.js";
 import { CreatesDailyThread } from "./Classes/Handlers/PrivateMessages/CreatesDailyThread.js";
+import { SchedulesPostsHandling } from "./Classes/Handlers/PrivateMessages/SchedulesPostsHandling.js";
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
-import { AutomatesFeaturedPost } from "./Classes/Services/AutomatesFeaturedPost.js";
+import { SchedulesPosts } from "./Classes/Services/SchedulesPosts.js";
 import { PostgresService } from "./Classes/Services/PostgresService.js";
 
 const { LemmyBot } = packages;
@@ -14,12 +15,11 @@ const configuration = container.get<Configuration>(Configuration);
 // initialise the private message handlers
 const privateMessageHandlers: HandlesPrivateMessage[] = [
   container.get<HandlesPrivateMessage>(CreatesDailyThread),
+  container.get<HandlesPrivateMessage>(SchedulesPostsHandling),
 ];
 
 // initialise services
-const automatesFeaturedPost: AutomatesFeaturedPost = container.get(
-  AutomatesFeaturedPost
-);
+const postSchedulerService: SchedulesPosts = container.get(SchedulesPosts);
 
 // initialise database
 await new PostgresService().initDBSchema();
@@ -86,7 +86,7 @@ const bot: packages.LemmyBot = new LemmyBot({
       }
     },
   },
-  schedule: automatesFeaturedPost.createBotTasks(),
+  schedule: postSchedulerService.createBotTasks(),
 });
 
 bot.start();

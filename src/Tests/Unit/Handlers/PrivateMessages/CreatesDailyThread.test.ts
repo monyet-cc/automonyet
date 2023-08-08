@@ -10,7 +10,7 @@ import {
   when,
 } from "ts-mockito";
 import { CreatesDailyThread } from "../../../../Classes/Handlers/PrivateMessages/CreatesDailyThread.js";
-import { DeterminesIfUserModeratesCommunity } from "../../../../Classes/Services/DeterminesIfUserModeratesCommunity.js";
+import { DeterminesIfUserModeratesCommunity } from "../../../../Classes/Services/DeterminesUserPermissions.js";
 import { LemmyApi } from "../../../../Classes/ValueObjects/LemmyApi.js";
 
 describe(CreatesDailyThread, () => {
