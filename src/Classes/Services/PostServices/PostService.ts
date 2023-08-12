@@ -3,6 +3,7 @@ import moment from "moment";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 import { PostgresService } from "../PostgresService.js";
 import { PostToCreate } from "../../ValueObjects/PostsToAutomate.js";
+import { OverduePostPin } from "../PostgresService.js";
 
 @provide(CreatesPost)
 export class CreatesPost {
@@ -41,5 +42,22 @@ export class CreatesPost {
         post.pinLocally
       );
     }
+  }
+}
+
+@provide(UnpinsPosts)
+export class UnpinsPosts {
+  constructor(private readonly client: LemmyApi) {}
+
+  public async unpinPosts(postsToUnpin: OverduePostPin[]): Promise<number[]> {
+    const unpinnedPostIds: number[] = [];
+    for (const post of postsToUnpin) {
+      await this.client.featurePost(post.postId, "Community", false);
+      if (post.isLocallyPinned)
+        await this.client.featurePost(post.postId, "Local", false);
+      unpinnedPostIds.push(post.postId);
+    }
+
+    return unpinnedPostIds;
   }
 }
