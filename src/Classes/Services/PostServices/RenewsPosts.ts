@@ -1,10 +1,7 @@
 import { provide } from "inversify-binding-decorators";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
-import { OverduePostPin, PostgresService } from "../PostgresService.js";
-import {
-  postsToAutomate,
-  PostToCreate,
-} from "../../ValueObjects/PostsToAutomate.js";
+import { PostgresService } from "../PostgresService.js";
+import { getPost } from "../../ValueObjects/PostsToAutomate.js";
 import { CreatesPost, UnpinsPosts } from "./PostService.js";
 
 @provide(RenewsPosts)
@@ -15,11 +12,6 @@ export class RenewsPosts {
     private readonly createsPostService: CreatesPost,
     private readonly unpinsPostservice: UnpinsPosts
   ) {}
-
-  private getPost(postCategory: string): PostToCreate {
-    const post = postsToAutomate.find((p) => p.category === postCategory)!;
-    return post;
-  }
 
   public async renewPosts(postCategory: string): Promise<void> {
     try {
@@ -34,9 +26,7 @@ export class RenewsPosts {
         await this.dbservice.clearUnpinnedPosts(unpinnedPostIds);
       }
 
-      await this.createsPostService.handlePostCreation(
-        this.getPost(postCategory)
-      );
+      await this.createsPostService.handlePostCreation(getPost(postCategory));
     } catch (err) {
       console.log(
         "An error has occured while automating scheduled posts: " + err

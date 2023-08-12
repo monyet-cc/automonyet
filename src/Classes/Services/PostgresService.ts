@@ -1,5 +1,9 @@
 import { provide } from "inversify-binding-decorators";
 import { pgClientPool as pool } from "./PgClientPool.js";
+import {
+  getNextScheduledTime,
+  postsToAutomate,
+} from "../ValueObjects/PostsToAutomate.js";
 
 export type OverduePostPin = {
   postId: number;
@@ -26,6 +30,47 @@ export class PostgresService {
     } catch (err) {
       console.error(
         "Error: failed to create schema and tables required for lemmy bot. ",
+        err
+      );
+    } finally {
+      client.release();
+    }
+  }
+
+  async initPostScheduleTasks(): Promise<void> {
+    const client = await pool.connect();
+    try {
+      // Initialize schema and tables if not created
+      const getExistingCategoriesQuery = `
+        SELECT DISTINCT category
+        FROM LemmyBot.taskSchedule
+        WHERE taskType = 'postsToAutomate';
+      `;
+      const result = await client.query(getExistingCategoriesQuery);
+      const categories = result.rows.map((row) => row.category);
+
+      const postsToSchedule = postsToAutomate.filter(
+        (post) => !categories.includes(post.category)
+      );
+
+      const initPostSchedulesQuery = `
+        INSERT INTO LemmyBot.taskSchedule (category, nextScheduledTime, taskType)
+        VALUES ($1, $2, $3)
+        `;
+
+      if (postsToSchedule !== undefined) {
+        for (const post of postsToSchedule) {
+          const params = [
+            post.category,
+            getNextScheduledTime(post.category),
+            "postsToAutomate",
+          ];
+          await client.query(initPostSchedulesQuery, params);
+        }
+      }
+    } catch (err) {
+      console.error(
+        "Error: failed to insert post schedules into database. ",
         err
       );
     } finally {

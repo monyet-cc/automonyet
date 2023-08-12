@@ -1,3 +1,6 @@
+import pkg from "cron-parser";
+const parseExpression = pkg.parseExpression;
+
 export type PostToCreate = {
   category: string;
   communityName: string;
@@ -67,3 +70,20 @@ export const postsToAutomate: PostToCreate[] = [
     dateFormat: "D MMMM YYYY",
   },
 ];
+
+const getCronExpression = (postCategory: string): string => {
+  const post = postsToAutomate.find((p) => p.category === postCategory)!;
+  return post.cronExpression;
+};
+
+export const getNextScheduledTime = (postCategory: string): Date => {
+  const cronExpression = getCronExpression(postCategory);
+
+  const interval = parseExpression(cronExpression);
+  return new Date(interval.next().toString());
+};
+
+export const getPost = (postCategory: string): PostToCreate => {
+  const post = postsToAutomate.find((p) => p.category === postCategory)!;
+  return post;
+};

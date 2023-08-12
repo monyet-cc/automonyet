@@ -189,7 +189,6 @@ describe(SchedulesPosts, () => {
 
     const interval = parseExpression(cronExpression);
     const nextScheduledTime = new Date(interval.next().toString());
-    console.log(expectedNextScheduledTime.toString());
     expect(moment(nextScheduledTime).isSame(expectedNextScheduledTime)).toBe(
       true
     );
@@ -232,15 +231,22 @@ describe(SchedulesPosts, () => {
     const dbMock = mock(PostgresService);
     const renewPostMock = mock(RenewsPosts);
 
+    const initPostScheduleTasksSpy = jest.spyOn(
+      dbMock,
+      "initPostScheduleTasks"
+    );
+    initPostScheduleTasksSpy.mockResolvedValue();
+
     const postSchedulerService = new SchedulesPosts(
       clientMock,
       dbMock,
       renewPostMock
     );
 
-    const botTasks = postSchedulerService.createBotTasks();
+    const botTasks = await postSchedulerService.createBotTasks();
 
     expect(Array.isArray(botTasks)).toBe(true);
     expect(botTasks.length).toBe(1);
+    expect(dbMock.initPostScheduleTasks).toHaveBeenCalledTimes(1);
   });
 });

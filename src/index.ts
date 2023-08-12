@@ -86,7 +86,7 @@ const bot: packages.LemmyBot = new LemmyBot({
       }
     },
   },
-  schedule: postSchedulerService.createBotTasks(),
+  schedule: await postSchedulerService.createBotTasks(),
 });
 
 bot.start();

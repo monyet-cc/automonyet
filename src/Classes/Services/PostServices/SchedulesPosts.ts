@@ -3,9 +3,7 @@ import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 import { BotTask } from "lemmy-bot";
 import { PostgresService, TaskSchedule } from "../PostgresService.js";
 import { RenewsPosts } from "./RenewsPosts.js";
-import { postsToAutomate } from "../../ValueObjects/PostsToAutomate.js";
-import pkg from "cron-parser";
-const parseExpression = pkg.parseExpression;
+import { getNextScheduledTime } from "../../ValueObjects/PostsToAutomate.js";
 
 @provide(SchedulesPosts)
 export class SchedulesPosts {
@@ -15,19 +13,12 @@ export class SchedulesPosts {
     private readonly renewPostService: RenewsPosts
   ) {}
 
-  private getCronExpression(postCategory: string): string {
-    const post = postsToAutomate.find((p) => p.category === postCategory)!;
-    return post.cronExpression;
+  private initPostScheduled() {
+    const a = "";
   }
 
-  private getNextScheduledTime(postCategory: string): Date {
-    const cronExpression = this.getCronExpression(postCategory);
-
-    const interval = parseExpression(cronExpression);
-    return new Date(interval.next().toString());
-  }
-
-  public createBotTasks = (): BotTask[] => {
+  public async createBotTasks(): Promise<BotTask[]> {
+    await this.dbservice.initPostScheduleTasks();
     const botTasks: BotTask[] = [];
     botTasks.push({
       cronExpression: "0 5 * * * *",
@@ -37,7 +28,7 @@ export class SchedulesPosts {
       },
     });
     return botTasks;
-  };
+  }
 
   public async handlePostSchedule(): Promise<void> {
     try {
@@ -49,7 +40,7 @@ export class SchedulesPosts {
           this.renewPostService.renewPosts(post.category);
 
           await this.dbservice.updateTaskSchedule(
-            this.getNextScheduledTime(post.category),
+            getNextScheduledTime(post.category),
             post.category
           );
         }
