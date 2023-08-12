@@ -5,7 +5,7 @@ import { CreatesDailyThread } from "./Classes/Handlers/PrivateMessages/CreatesDa
 import { SchedulesPostsHandling } from "./Classes/Handlers/PrivateMessages/SchedulesPostsHandling.js";
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
-import { SchedulesPosts } from "./Classes/Services/PostSchedulingServices/SchedulesPosts.js";
+import { SchedulesPosts } from "./Classes/Services/PostServices/SchedulesPosts.js";
 import { PostgresService } from "./Classes/Services/PostgresService.js";
 
 const { LemmyBot } = packages;

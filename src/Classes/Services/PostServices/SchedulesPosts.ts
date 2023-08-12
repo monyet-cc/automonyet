@@ -16,7 +16,14 @@ export class SchedulesPosts {
 
   private getCronExpression(postCategory: string): string {
     const post = postsToAutomate.find((p) => p.category === postCategory)!;
-    return post.category;
+    return post.cronExpression;
+  }
+
+  private getNextScheduledTime(postCategory: string): Date {
+    const cronExpression = this.getCronExpression(postCategory);
+
+    const interval = parseExpression(cronExpression);
+    return new Date(interval.next().toString());
   }
 
   public createBotTasks = (): BotTask[] => {
@@ -40,13 +47,8 @@ export class SchedulesPosts {
         for (const post of postsToSchedule) {
           this.renewPostService.renewPosts(post.category);
 
-          const cronExpression = this.getCronExpression(post.category);
-
-          const interval = parseExpression(cronExpression);
-          const nextScheduledTime = new Date(interval.next().toString());
-
           await this.dbservice.updateTaskSchedule(
-            nextScheduledTime,
+            this.getNextScheduledTime(post.category),
             post.category
           );
         }

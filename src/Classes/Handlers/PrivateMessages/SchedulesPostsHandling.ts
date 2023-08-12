@@ -4,7 +4,7 @@ import { Person } from "lemmy-js-client";
 import { DeterminesIfUserIsAdmin } from "../../Services/DeterminesUserPermissions.js";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 import { HandlesPrivateMessage } from "../HandlesPrivateMessage.js";
-import { SchedulesPosts } from "../../Services/PostSchedulingServices/SchedulesPosts.js";
+import { SchedulesPosts } from "../../Services/PostServices/SchedulesPosts.js";
 
 @provide(SchedulesPostsHandling)
 export class SchedulesPostsHandling implements HandlesPrivateMessage {

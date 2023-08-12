@@ -3,10 +3,14 @@ import {
   Community,
   GetPersonDetailsResponse,
   Person,
+  PersonAggregates,
   PersonView,
 } from "lemmy-js-client";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
-import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesUserPermissions.js";
+import {
+  DeterminesIfUserIsAdmin,
+  DeterminesIfUserModeratesCommunity,
+} from "../../../Classes/Services/DeterminesUserPermissions.js";
 import { Configuration } from "../../../Classes/ValueObjects/Configuration.js";
 import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 
@@ -15,7 +19,7 @@ describe(DeterminesIfUserModeratesCommunity, () => {
     const personMock = mock<Person>();
     const personInstance: Person = instance(personMock);
     const regularUser: Person = { ...personInstance, name: "regular user" };
-    const cafeModerator: Person = { ...personInstance, name: "cafe moderator" };
+    const admin: Person = { ...personInstance, name: "cafe moderator" };
     const otherCommunityModerator: Person = {
       ...personInstance,
       name: "other community mod",
@@ -43,12 +47,12 @@ describe(DeterminesIfUserModeratesCommunity, () => {
       moderates: [],
     };
 
-    const cafeModeratorResponse: GetPersonDetailsResponse = {
+    const adminResponse: GetPersonDetailsResponse = {
       ...regularUserResponse,
       moderates: [
         {
           community: cafeCommunity,
-          moderator: cafeModerator,
+          moderator: admin,
         },
       ],
     };
@@ -70,8 +74,8 @@ describe(DeterminesIfUserModeratesCommunity, () => {
         isPermitted: false,
       },
       {
-        person: cafeModerator,
-        response: cafeModeratorResponse,
+        person: admin,
+        response: adminResponse,
         isPermitted: true,
       },
       {
@@ -103,6 +107,83 @@ describe(DeterminesIfUserModeratesCommunity, () => {
           data.person,
           expectedCommunityName
         );
+
+        verify(clientMock.getDetailsForPerson(data.person)).once();
+
+        const [personArgument] = capture(clientMock.getDetailsForPerson).last();
+        expect(personArgument).toBe(data.person);
+        expect(isCafeModerator).toBe(data.isPermitted);
+      });
+    }
+  );
+});
+
+describe(DeterminesIfUserIsAdmin, () => {
+  const userData = (() => {
+    const personMock = mock<Person>();
+    const personInstance: Person = instance(personMock);
+    const regularUser: Person = { ...personInstance, name: "regular user" };
+    const admin: Person = { ...personInstance, name: "admin" };
+
+    const person = instance<Person>(mock<Person>());
+    const counts = instance<PersonAggregates>(mock<PersonAggregates>());
+    const getPersonInterface = (isAdmin: boolean): Person => {
+      return {
+        ...person,
+        admin: isAdmin,
+      };
+    };
+
+    const regularUserResponse: GetPersonDetailsResponse = {
+      person_view: {
+        person: getPersonInterface(false),
+        counts: counts,
+      },
+      posts: [],
+      comments: [],
+      moderates: [],
+    };
+
+    const adminResponse: GetPersonDetailsResponse = {
+      person_view: {
+        person: getPersonInterface(true),
+        counts: counts,
+      },
+      posts: [],
+      comments: [],
+      moderates: [],
+    };
+
+    return [
+      {
+        person: regularUser,
+        response: regularUserResponse,
+        isPermitted: false,
+      },
+      {
+        person: admin,
+        response: adminResponse,
+        isPermitted: true,
+      },
+    ];
+  })();
+
+  describe.each(userData)(
+    "Check whether user has moderator permissions for community",
+    (data) => {
+      it(`checks if ${data.person.name} has admin permissions}`, async () => {
+        const clientMock = mock(LemmyApi);
+
+        when(clientMock.getDetailsForPerson(anything())).thenResolve(
+          data.response
+        );
+
+        const handler = new DeterminesIfUserIsAdmin(
+          Configuration.createFromEnv(),
+          instance(clientMock)
+        );
+
+        const isCafeModerator = await handler.handle(data.person);
 
         verify(clientMock.getDetailsForPerson(data.person)).once();
 

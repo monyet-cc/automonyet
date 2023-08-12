@@ -1,4 +1,4 @@
-export type PostToAutomate = {
+export type PostToCreate = {
   category: string;
   communityName: string;
   body: string | undefined;
@@ -10,7 +10,7 @@ export type PostToAutomate = {
   dateFormat: string;
 };
 
-export const postsToAutomate: PostToAutomate[] = [
+export const postsToAutomate: PostToCreate[] = [
   {
     category: "Daily Chat Thread",
     communityName: "cafe",
