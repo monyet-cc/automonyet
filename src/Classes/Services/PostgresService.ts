@@ -19,7 +19,7 @@ export class PostgresService {
       // Initialize schema and tables if not created
       const initDbQuery = `
           CREATE SCHEMA IF NOT EXISTS LemmyBot AUTHORIZATION lemmy;
-          CREATE TABLE IF NOT EXISTS LemmyBot.PostPinDuration (postId integer, category varchar(30), remainingDays numeric(4, 0), isLocallyPinned boolean);
+          CREATE TABLE IF NOT EXISTS LemmyBot.currentlyPinnedPosts (postId integer, category varchar(30), isLocallyPinned boolean);
           CREATE TABLE IF NOT EXISTS LemmyBot.taskSchedule (category varchar(30), nextScheduledTime timestamptz, taskType varchar(30));
         `;
       await client.query(initDbQuery);
@@ -43,54 +43,12 @@ export class PostgresService {
       const params = [postId, category, isLocallyPinned];
       // specifies how long a post should be pinned
       const setPostPinDurationQuery = `
-        INSERT INTO LemmyBot.PostPinDuration (postId, category, isLocallyPinned)
+        INSERT INTO LemmyBot.currentlyPinnedPosts (postId, category, isLocallyPinned)
         VALUES ($1, $2, $3);
       `;
       await client.query(setPostPinDurationQuery, params);
     } catch (err) {
       console.error("Error: failed to set post for auto removal. ", err);
-    } finally {
-      client.release();
-    }
-  }
-
-  async handleOverduePins(): Promise<OverduePostPin[] | undefined> {
-    const client = await pool.connect();
-
-    try {
-      await client.query("BEGIN");
-
-      // reduce post pin duration by one day
-      const updatePostPinDurationQuery = `
-          UPDATE LemmyBot.PostPinDuration
-          SET remainingDays = (remainingDays - 1)
-          WHERE remainingDays > 0;
-        `;
-      await client.query(updatePostPinDurationQuery);
-
-      // fetch posts that should be unpinned
-      const fetchOverduePostPins = `
-        SELECT postId, isLocallyPinned
-        FROM LemmyBot.PostPinDuration
-        WHERE remainingDays <= 0;
-      `;
-      const result = await client.query(fetchOverduePostPins);
-
-      const deleteOverduePostPins = `
-      DELETE FROM LemmyBot.PostPinDuration
-      WHERE remainingDays <= 0;
-    `;
-      await client.query(deleteOverduePostPins);
-      await client.query("COMMIT");
-
-      const overduePostPins: OverduePostPin[] = result.rows.map((row) => ({
-        postId: row.postid,
-        isLocallyPinned: row.islocallypinned,
-      }));
-      return overduePostPins;
-    } catch (err) {
-      await client.query("ROLLBACK");
-      console.error("Error: failed to handle overdue pinned posts. ", err);
     } finally {
       client.release();
     }
