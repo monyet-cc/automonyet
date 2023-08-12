@@ -4,7 +4,8 @@ import { BotTask } from "lemmy-bot";
 import { PostgresService, TaskSchedule } from "../PostgresService.js";
 import { RenewsPosts } from "./RenewsPosts.js";
 import { postsToAutomate } from "../../ValueObjects/PostsToAutomate.js";
-import { parseExpression } from "cron-parser";
+import pkg from "cron-parser";
+const parseExpression = pkg.parseExpression;
 
 @provide(SchedulesPosts)
 export class SchedulesPosts {

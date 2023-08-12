@@ -11,7 +11,8 @@ import {
   UnpinsPosts,
 } from "../../../Classes/Services/PostServices/PostService.js";
 import { SchedulesPosts } from "./../../../Classes/Services/PostServices/SchedulesPosts.js";
-import { parseExpression } from "cron-parser";
+import pkg from "cron-parser";
+const parseExpression = pkg.parseExpression;
 
 describe(CreatesPost, () => {
   it("Create Post Handling", async () => {
@@ -116,14 +117,19 @@ describe(RenewsPosts, () => {
         { postId: 2, isLocallyPinned: true },
       ];
 
-      const getOverduePostsSpy = jest.spyOn(dbMock, "getOverduePosts");
-      getOverduePostsSpy.mockResolvedValue(currentlyPinnedPosts);
+      const getCurrentlyPinnedPostsSpy = jest.spyOn(
+        dbMock,
+        "getCurrentlyPinnedPosts"
+      );
+      getCurrentlyPinnedPostsSpy.mockResolvedValue(currentlyPinnedPosts);
 
       when(
         clientMock.featurePost(anything(), anything(), anything())
       ).thenResolve();
 
-      const postsToUnpin = await dbMock.getOverduePosts("Daily Chat Thread");
+      const postsToUnpin = await dbMock.getCurrentlyPinnedPosts(
+        "Daily Chat Thread"
+      );
 
       expect(postsToUnpin).toBe(currentlyPinnedPosts);
     } catch (err) {
@@ -142,8 +148,11 @@ describe(RenewsPosts, () => {
       { postId: 2, isLocallyPinned: true },
     ];
 
-    const getOverduePostsSpy = jest.spyOn(dbMock, "getOverduePosts");
-    getOverduePostsSpy.mockResolvedValue(currentlyPinnedPosts);
+    const getCurrentlyPinnedPostsSpy = jest.spyOn(
+      dbMock,
+      "getCurrentlyPinnedPosts"
+    );
+    getCurrentlyPinnedPostsSpy.mockResolvedValue(currentlyPinnedPosts);
 
     const unpinPostsSpy = jest.spyOn(unpinsPostServiceMock, "unpinPosts");
     unpinPostsSpy.mockResolvedValue([0, 1, 2]);
@@ -160,7 +169,7 @@ describe(RenewsPosts, () => {
 
     await renewPostService.renewPosts("Daily Chat Thread");
 
-    expect(dbMock.getOverduePosts).toHaveBeenCalledTimes(1);
+    expect(dbMock.getCurrentlyPinnedPosts).toHaveBeenCalledTimes(1);
     expect(unpinsPostServiceMock.unpinPosts).toHaveBeenCalledTimes(1);
     expect(dbMock.clearUnpinnedPosts).toHaveBeenCalledTimes(1);
   });

@@ -72,13 +72,13 @@ export class PostgresService {
 
       return scheduledTasks;
     } catch (err) {
-      console.error("Error: failed to set post for auto removal. ", err);
+      console.error("Error: failed to get task schedules ", err);
     } finally {
       client.release();
     }
   }
 
-  async getOverduePosts(
+  async getCurrentlyPinnedPosts(
     category: string
   ): Promise<OverduePostPin[] | undefined> {
     const client = await pool.connect();
@@ -96,7 +96,7 @@ export class PostgresService {
 
       return overduePostPins;
     } catch (err) {
-      console.error("Error: failed to set post for auto removal. ", err);
+      console.error("Error: failed to get currently pinned posts. ", err);
     } finally {
       client.release();
     }
@@ -111,7 +111,10 @@ export class PostgresService {
       `;
       await client.query(getScheduledTasksQuery, param);
     } catch (err) {
-      console.error("Error: failed to set post for auto removal. ", err);
+      console.error(
+        `Error: delete unpinned post records for post Ids: ${postIds} `,
+        err
+      );
     } finally {
       client.release();
     }
@@ -131,7 +134,10 @@ export class PostgresService {
       `;
       await client.query(getScheduledTasksQuery, param);
     } catch (err) {
-      console.error("Error: failed to set post for auto removal. ", err);
+      console.error(
+        `Error: failed update the nextscheduled time for the tasks of category ${category}`,
+        err
+      );
     } finally {
       client.release();
     }

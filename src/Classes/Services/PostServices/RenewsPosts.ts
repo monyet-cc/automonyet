@@ -23,7 +23,7 @@ export class RenewsPosts {
 
   public async renewPosts(postCategory: string): Promise<void> {
     try {
-      const currentlyPinnedPosts = await this.dbservice.getOverduePosts(
+      const currentlyPinnedPosts = await this.dbservice.getCurrentlyPinnedPosts(
         postCategory
       );
 
