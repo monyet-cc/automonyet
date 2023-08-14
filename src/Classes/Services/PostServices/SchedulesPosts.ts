@@ -13,10 +13,6 @@ export class SchedulesPosts {
     private readonly renewPostService: RenewsPosts
   ) {}
 
-  private initPostScheduled() {
-    const a = "";
-  }
-
   public async createBotTasks(): Promise<BotTask[]> {
     await this.dbservice.initPostScheduleTasks();
     const botTasks: BotTask[] = [];
