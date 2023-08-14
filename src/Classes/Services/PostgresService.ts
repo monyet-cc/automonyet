@@ -106,7 +106,7 @@ export class PostgresService {
     try {
       const params = [taskType];
       const getScheduledTasksQuery = `
-        SELECT category, nextScheduledTime FROM LemmyBot.taskSchedules where taskType = $1 and nextScheduledTime <= NOW();
+        SELECT category, nextScheduledTime FROM LemmyBot.taskSchedule where taskType = $1 and nextScheduledTime <= NOW();
       `;
       const result = await client.query(getScheduledTasksQuery, params);
 
@@ -173,7 +173,7 @@ export class PostgresService {
     const param = [nextScheduledTime, category];
     try {
       const getScheduledTasksQuery = `
-        UPDATE LemmyBot.taskSchedules
+        UPDATE LemmyBot.taskSchedule
         SET nextScheduledTime = $1
         WHERE category = $2;
       `;
