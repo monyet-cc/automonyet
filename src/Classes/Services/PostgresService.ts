@@ -152,7 +152,7 @@ export class PostgresService {
     const param = [postIds];
     try {
       const getScheduledTasksQuery = `
-        DELETE FROM LemmyBot.currentlyPinnedPosts WHERE postId ANY($1);
+        DELETE FROM LemmyBot.currentlyPinnedPosts WHERE postId IN($1:list);
       `;
       await client.query(getScheduledTasksQuery, param);
     } catch (err) {

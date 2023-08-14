@@ -23,7 +23,8 @@ export class RenewsPosts {
         const unpinnedPostIds = await this.unpinsPostservice.unpinPosts(
           currentlyPinnedPosts
         );
-        await this.dbservice.clearUnpinnedPosts(unpinnedPostIds);
+        if (unpinnedPostIds.length > 0)
+          await this.dbservice.clearUnpinnedPosts(unpinnedPostIds);
       }
 
       await this.createsPostService.handlePostCreation(getPost(postCategory));
