@@ -24,7 +24,7 @@ export class RenewsPosts {
           currentlyPinnedPosts
         );
         if (unpinnedPostIds.length > 0)
-          await this.dbservice.clearUnpinnedPosts(unpinnedPostIds);
+          await this.dbservice.clearUnpinnedPosts(postCategory);
       }
 
       await this.createsPostService.handlePostCreation(getPost(postCategory));

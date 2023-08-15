@@ -80,12 +80,12 @@ export class PostgresService {
 
   async setPostAutoRemoval(
     postId: number,
-    category: string,
+    postCategory: string,
     isLocallyPinned: boolean
   ): Promise<void> {
     const client = await pool.connect();
     try {
-      const params = [postId, category, isLocallyPinned];
+      const params = [postId, postCategory, isLocallyPinned];
       // specifies how long a post should be pinned
       const setPostPinDurationQuery = `
         INSERT INTO LemmyBot.currentlyPinnedPosts (postId, category, isLocallyPinned)
@@ -93,7 +93,10 @@ export class PostgresService {
       `;
       await client.query(setPostPinDurationQuery, params);
     } catch (err) {
-      console.error("Error: failed to set post for auto removal. ", err);
+      console.error(
+        `Error: failed to set post for auto removal for postId ${postId} of category ${postCategory}. `,
+        err
+      );
     } finally {
       client.release();
     }
@@ -124,11 +127,11 @@ export class PostgresService {
   }
 
   async getCurrentlyPinnedPosts(
-    category: string
+    postCategory: string
   ): Promise<OverduePostPin[] | undefined> {
     const client = await pool.connect();
     try {
-      const params = [category];
+      const params = [postCategory];
       const getScheduledTasksQuery = `
         SELECT postId, isLocallyPinned FROM LemmyBot.currentlyPinnedPosts where category = $1;
       `;
@@ -141,23 +144,8 @@ export class PostgresService {
 
       return overduePostPins;
     } catch (err) {
-      console.error("Error: failed to get currently pinned posts. ", err);
-    } finally {
-      client.release();
-    }
-  }
-
-  async clearUnpinnedPosts(postIds: number[]): Promise<void> {
-    const client = await pool.connect();
-    const param = [postIds];
-    try {
-      const getScheduledTasksQuery = `
-        DELETE FROM LemmyBot.currentlyPinnedPosts WHERE postId IN($1:list);
-      `;
-      await client.query(getScheduledTasksQuery, param);
-    } catch (err) {
       console.error(
-        `Error: delete unpinned post records for post Ids: ${postIds} `,
+        `Error: failed to get currently pinned posts for category ${postCategory}. `,
         err
       );
     } finally {
@@ -165,12 +153,30 @@ export class PostgresService {
     }
   }
 
-  async updateTaskSchedule(
+  async clearUnpinnedPosts(postCategory: string): Promise<void> {
+    const client = await pool.connect();
+    const param = [postCategory];
+    try {
+      const getScheduledTasksQuery = `
+        DELETE FROM LemmyBot.currentlyPinnedPosts WHERE category = $1;
+      `;
+      await client.query(getScheduledTasksQuery, param);
+    } catch (err) {
+      console.error(
+        `Error: failed to delete unpinned post records for post category: ${postCategory} `,
+        err
+      );
+    } finally {
+      client.release();
+    }
+  }
+
+  async updatePostTaskSchedule(
     nextScheduledTime: Date,
-    category: string
+    postCategory: string
   ): Promise<void> {
     const client = await pool.connect();
-    const param = [nextScheduledTime, category];
+    const param = [nextScheduledTime, postCategory];
     try {
       const getScheduledTasksQuery = `
         UPDATE LemmyBot.taskSchedule
@@ -180,7 +186,7 @@ export class PostgresService {
       await client.query(getScheduledTasksQuery, param);
     } catch (err) {
       console.error(
-        `Error: failed update the nextscheduled time for the tasks of category ${category}`,
+        `Error: failed update the nextscheduled time for the tasks of category ${postCategory}`,
         err
       );
     } finally {

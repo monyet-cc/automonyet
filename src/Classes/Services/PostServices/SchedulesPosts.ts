@@ -35,7 +35,7 @@ export class SchedulesPosts {
         for (const post of postsToSchedule) {
           this.renewPostService.renewPosts(post.category);
 
-          await this.dbservice.updateTaskSchedule(
+          await this.dbservice.updatePostTaskSchedule(
             getNextScheduledTime(post.category),
             post.category
           );

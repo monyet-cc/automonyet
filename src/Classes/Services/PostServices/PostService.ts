@@ -23,28 +23,38 @@ export class CreatesPost {
         post.communityName
       );
 
-      const postIdentifier: number = await this.client.createFeaturedPost(
-        {
-          name: this.generatePostTitle(post.title, post.dateFormat),
-          community_id: communityIdentifier,
-          body: post.body,
-        },
-        "Community"
-      );
-      if (post.pinLocally) {
-        await this.client.featurePost(postIdentifier, "Local", true);
-      }
-
-      //save postId in db
-      if (post.daysToPin > 0) {
-        await this.dbservice.setPostAutoRemoval(
-          postIdentifier,
-          post.category,
-          post.pinLocally
+      if (
+        communityIdentifier <= 0 ||
+        communityIdentifier == null ||
+        communityIdentifier == undefined
+      ) {
+        console.log(
+          `Invalid community. Community ${post.communityName} not found.`
         );
+      } else {
+        const postIdentifier: number = await this.client.createFeaturedPost(
+          {
+            name: this.generatePostTitle(post.title, post.dateFormat),
+            community_id: communityIdentifier,
+            body: post.body,
+          },
+          "Community"
+        );
+        if (post.pinLocally) {
+          await this.client.featurePost(postIdentifier, "Local", true);
+        }
+
+        //save postId in db
+        if (post.daysToPin > 0) {
+          await this.dbservice.setPostAutoRemoval(
+            postIdentifier,
+            post.category,
+            post.pinLocally
+          );
+        }
       }
     } catch (err) {
-      console.log("An error has occured while trying to create the post.");
+      console.log("An error has occured while trying to create the post.", err);
     }
   }
 }
