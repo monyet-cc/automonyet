@@ -217,14 +217,14 @@ describe(SchedulesPosts, () => {
     const renewPostsSpy = jest.spyOn(renewPostMock, "renewPosts");
     renewPostsSpy.mockResolvedValue();
 
-    const updateTaskScheduleSpy = jest.spyOn(dbMock, "updateTaskSchedule");
+    const updateTaskScheduleSpy = jest.spyOn(dbMock, "updatePostTaskSchedule");
     updateTaskScheduleSpy.mockResolvedValue();
 
     await postSchedulerService.handlePostSchedule();
 
     expect(dbMock.getScheduledTasks).toHaveBeenCalledTimes(1);
     expect(renewPostMock.renewPosts).toHaveBeenCalledTimes(1);
-    expect(dbMock.updateTaskSchedule).toHaveBeenCalledTimes(1);
+    expect(dbMock.updatePostTaskSchedule).toHaveBeenCalledTimes(1);
   });
   it("Creates Bot Tasks", async () => {
     const clientMock = mock(LemmyApi);
