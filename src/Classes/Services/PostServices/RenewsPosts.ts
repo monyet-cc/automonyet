@@ -1,6 +1,6 @@
 import { provide } from "inversify-binding-decorators";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
-import { PostgresService } from "../PostgresService.js";
+import { PostgresService } from "../PostgresServices/PostgresService.js";
 import { getPost } from "../../ValueObjects/PostsToAutomate.js";
 import { CreatesPost, UnpinsPosts } from "./PostService.js";
 

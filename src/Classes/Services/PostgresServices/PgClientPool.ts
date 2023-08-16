@@ -1,5 +1,5 @@
 import pg from "pg";
-import { pgClientConfig } from "../ValueObjects/PostgresClientConfiguration.js";
+import { pgClientConfig } from "../../ValueObjects/PostgresClientConfiguration.js";
 
 export const pgClientPool = new pg.Pool({
   ...pgClientConfig,

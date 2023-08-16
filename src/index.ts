@@ -6,7 +6,7 @@ import { SchedulesPostsHandling } from "./Classes/Handlers/PrivateMessages/Sched
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
 import { SchedulesPosts } from "./Classes/Services/PostServices/SchedulesPosts.js";
-import { PostgresService } from "./Classes/Services/PostgresService.js";
+import { PostgresService } from "./Classes/Services/PostgresServices/PostgresService.js";
 
 const { LemmyBot } = packages;
 

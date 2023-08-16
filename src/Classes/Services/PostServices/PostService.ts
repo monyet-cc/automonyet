@@ -1,9 +1,9 @@
 import { provide } from "inversify-binding-decorators";
 import moment from "moment";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
-import { PostgresService } from "../PostgresService.js";
+import { PostgresService } from "../PostgresServices/PostgresService.js";
 import { PostToCreate } from "../../ValueObjects/PostsToAutomate.js";
-import { OverduePostPin } from "../PostgresService.js";
+import { OverduePostPin } from "../PostgresServices/PostgresService.js";
 
 @provide(CreatesPost)
 export class CreatesPost {

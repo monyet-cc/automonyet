@@ -3,8 +3,10 @@ import "reflect-metadata";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
 import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 import moment from "moment";
-import { PostgresService } from "../../../Classes/Services/PostgresService.js";
-import { OverduePostPin } from "../../../Classes/Services/PostgresService.js";
+import {
+  PostgresService,
+  OverduePostPin,
+} from "../../../Classes/Services/PostgresServices/PostgresService.js";
 import { RenewsPosts } from "../../../Classes/Services/PostServices/RenewsPosts.js";
 import {
   CreatesPost,

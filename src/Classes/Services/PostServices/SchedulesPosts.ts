@@ -1,7 +1,10 @@
 import { provide } from "inversify-binding-decorators";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 import { BotTask } from "lemmy-bot";
-import { PostgresService, TaskSchedule } from "../PostgresService.js";
+import {
+  PostgresService,
+  TaskSchedule,
+} from "../PostgresServices/PostgresService.js";
 import { RenewsPosts } from "./RenewsPosts.js";
 import { getNextScheduledTime } from "../../ValueObjects/PostsToAutomate.js";
 

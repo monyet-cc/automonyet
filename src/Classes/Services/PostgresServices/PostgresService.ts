@@ -3,7 +3,7 @@ import { pgClientPool as pool } from "./PgClientPool.js";
 import {
   getNextScheduledTime,
   postsToAutomate,
-} from "../ValueObjects/PostsToAutomate.js";
+} from "../../ValueObjects/PostsToAutomate.js";
 
 export type OverduePostPin = {
   postId: number;
