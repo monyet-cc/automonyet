@@ -36,13 +36,11 @@ export class CreatesPost {
       }
 
       //save postId in db
-      if (post.daysToPin > 0) {
-        await this.dbservice.setPostAutoRemoval(
-          postIdentifier,
-          post.category,
-          post.pinLocally
-        );
-      }
+      await this.dbservice.setPostAutoRemoval(
+        postIdentifier,
+        post.category,
+        post.pinLocally
+      );
     } catch (err) {
       console.log(
         `An error has occured while trying to create the post: ${post.category} in community ${post.communityName}`,

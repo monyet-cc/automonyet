@@ -8,7 +8,6 @@ export type PostToCreate = {
   pinLocally: boolean;
   cronExpression: string;
   timezone: string;
-  daysToPin: number; //use zero if pin is not required
   title: string;
   dateFormat: string;
 };
@@ -21,7 +20,6 @@ export const postsToAutomate: PostToCreate[] = [
     pinLocally: true,
     cronExpression: "0 0 4 * * *",
     timezone: "Asia/Kuala_Lumpur",
-    daysToPin: 1,
     title: `/c/café daily chat thread for $date`,
     dateFormat: "D MMMM YYYY",
   },
@@ -32,7 +30,6 @@ export const postsToAutomate: PostToCreate[] = [
     pinLocally: false,
     cronExpression: "0 0 4 * * *",
     timezone: "Asia/Kuala_Lumpur",
-    daysToPin: 1,
     title: `Daily c/food Thread - Whatcha Having Today? $date`,
     dateFormat: "Do MMMM, YYYY",
   },
@@ -43,7 +40,6 @@ export const postsToAutomate: PostToCreate[] = [
     pinLocally: false,
     cronExpression: "0 0 4 * * 1",
     timezone: "Asia/Kuala_Lumpur",
-    daysToPin: 7,
     title: `Mental Wellness Weekly Check-in Thread $date`,
     dateFormat: "D MMMM YYYY",
   },
@@ -54,7 +50,6 @@ export const postsToAutomate: PostToCreate[] = [
     pinLocally: false,
     cronExpression: "0 0 4 * * 2",
     timezone: "Asia/Kuala_Lumpur",
-    daysToPin: 7,
     title: `What did you watch this week? ($date edition)`,
     dateFormat: "Do MMM YYYY",
   },
@@ -65,7 +60,6 @@ export const postsToAutomate: PostToCreate[] = [
     pinLocally: false,
     cronExpression: "0 0 4 * * 4",
     timezone: "Asia/Kuala_Lumpur",
-    daysToPin: 7,
     title: `What is your current read? $date`,
     dateFormat: "D MMMM YYYY",
   },

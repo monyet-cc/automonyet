@@ -1,4 +1,4 @@
-import { TaskSchedule } from "./../../../../dist/Classes/Services/PostgresService.d";
+import { TaskSchedule } from "../../../Classes/Services/PostgresServices/PostgresService.js";
 import "reflect-metadata";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
 import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
@@ -28,7 +28,6 @@ describe(CreatesPost, () => {
       pinLocally: true,
       cronExpression: "5 0 4 * * *",
       timezone: "Asia/Kuala_Lumpur",
-      daysToPin: 1,
       title: `/c/café daily chat thread for $date`,
       dateFormat: "D MMMM YYYY",
     };
