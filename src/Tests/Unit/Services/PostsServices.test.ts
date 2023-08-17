@@ -8,10 +8,8 @@ import {
   OverduePostPin,
 } from "../../../Classes/Services/PostgresServices/PostgresService.js";
 import { RenewsPosts } from "../../../Classes/Services/PostServices/RenewsPosts.js";
-import {
-  CreatesPost,
-  UnpinsPosts,
-} from "../../../Classes/Services/PostServices/PostService.js";
+import { CreatesPost } from "../../../Classes/Services/PostServices/CreatesPost.js";
+import { UnpinsPosts } from "../../../Classes/Services/PostServices/UnpinsPosts.js";
 import { SchedulesPosts } from "./../../../Classes/Services/PostServices/SchedulesPosts.js";
 import pkg from "cron-parser";
 const parseExpression = pkg.parseExpression;

@@ -1,8 +1,6 @@
-import { stripIndents } from "common-tags";
 import { provide } from "inversify-binding-decorators";
 import { Person } from "lemmy-js-client";
-import { DeterminesIfUserIsAdmin } from "../../Services/DeterminesUserPermissions.js";
-import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
+import { DeterminesIfUserIsAdmin } from "../../Services/DeterminesUserPermissions/DeterminesIfUserIsAdmin.js";
 import { HandlesPrivateMessage } from "../HandlesPrivateMessage.js";
 import { SchedulesPosts } from "../../Services/PostServices/SchedulesPosts.js";
 

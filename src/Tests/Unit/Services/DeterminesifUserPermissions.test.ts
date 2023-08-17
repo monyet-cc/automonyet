@@ -7,10 +7,8 @@ import {
   PersonView,
 } from "lemmy-js-client";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
-import {
-  DeterminesIfUserIsAdmin,
-  DeterminesIfUserModeratesCommunity,
-} from "../../../Classes/Services/DeterminesUserPermissions.js";
+import { DeterminesIfUserModeratesCommunity } from "../../../Classes/Services/DeterminesUserPermissions/DeterminesIfUserModeratesCommunity.js";
+import { DeterminesIfUserIsAdmin } from "../../../Classes/Services/DeterminesUserPermissions/DeterminesIfUserIsAdmin.js";
 import { Configuration } from "../../../Classes/ValueObjects/Configuration.js";
 import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 
