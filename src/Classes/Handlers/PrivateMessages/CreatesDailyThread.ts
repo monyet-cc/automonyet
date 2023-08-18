@@ -2,7 +2,7 @@ import { stripIndents } from "common-tags";
 import { provide } from "inversify-binding-decorators";
 import { Person } from "lemmy-js-client";
 import moment from "moment";
-import { DeterminesIfUserModeratesCommunity } from "../../Services/DeterminesIfUserModeratesCommunity.js";
+import { DeterminesIfUserModeratesCommunity } from "../../Services/DeterminesUserPermissions/DeterminesIfUserModeratesCommunity.js";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 import { HandlesPrivateMessage } from "../HandlesPrivateMessage.js";
 

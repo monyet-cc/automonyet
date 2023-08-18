@@ -1,7 +1,7 @@
 import { provide } from "inversify-binding-decorators";
 import { CommunityModeratorView, Person } from "lemmy-js-client";
-import { Configuration } from "../ValueObjects/Configuration.js";
-import { LemmyApi } from "../ValueObjects/LemmyApi.js";
+import { Configuration } from "../../ValueObjects/Configuration.js";
+import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 
 @provide(DeterminesIfUserModeratesCommunity)
 export class DeterminesIfUserModeratesCommunity {
