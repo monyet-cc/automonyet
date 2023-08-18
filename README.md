@@ -1,10 +1,10 @@
 # Automoderator (Automonyet) for monyet.cc
 
 ###Want to run the bot?
-1. Clone the project using git clone, e.g. 
+1. Clone the project using git clone, e.g. clone using ssh
 > git clone git@github.com:monyet-cc/automonyet.git
 
-2. Set up your env file(refer to .env.example). 
+2. Set up your env file(refer to .env.example). The bot must be hosted on the same machine where your lemmy instance is hosted.
 PG_HOST is the container name that hosts the postgres service. The BOT_USERNAME and BOT_PASSWORD will be used to login to your instance. It will create a new account if the account doesn't exist.
 
 3. Configure the src/Classes/ValueObjects/PostsToAutomate file. Below are the properties you need to configure for the posts.
