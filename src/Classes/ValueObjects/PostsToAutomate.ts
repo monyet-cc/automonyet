@@ -70,6 +70,14 @@ const getCronExpression = (postCategory: string): string => {
   return post.cronExpression;
 };
 
+export const getPostsToSchedule = (postCategories: string[]) => {
+  const postsToSchedule = postsToAutomate.filter(
+    (post) => !postCategories.includes(post.category)
+  );
+
+  return postsToSchedule;
+};
+
 export const getNextScheduledTime = (postCategory: string): Date => {
   const cronExpression = getCronExpression(postCategory);
 

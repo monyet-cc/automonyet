@@ -2,7 +2,7 @@ import { provide } from "inversify-binding-decorators";
 import { pgClientPool as pool } from "./PgClientPool.js";
 import {
   getNextScheduledTime,
-  postsToAutomate,
+  getPostsToSchedule,
 } from "../../ValueObjects/PostsToAutomate.js";
 
 export type OverduePostPin = {
@@ -47,11 +47,9 @@ export class PostgresService {
         WHERE taskType = 'postsToAutomate';
       `;
       const result = await client.query(getExistingCategoriesQuery);
-      const categories = result.rows.map((row) => row.category);
+      const postCategories = result.rows.map((row) => row.category);
 
-      const postsToSchedule = postsToAutomate.filter(
-        (post) => !categories.includes(post.category)
-      );
+      const postsToSchedule = getPostsToSchedule(postCategories);
 
       const initPostSchedulesQuery = `
         INSERT INTO LemmyBot.taskSchedule (category, nextScheduledTime, taskType)
