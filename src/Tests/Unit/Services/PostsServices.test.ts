@@ -11,6 +11,7 @@ import { RenewsPosts } from "../../../Classes/Services/PostServices/RenewsPosts.
 import { CreatesPost } from "../../../Classes/Services/PostServices/CreatesPost.js";
 import { UnpinsPosts } from "../../../Classes/Services/PostServices/UnpinsPosts.js";
 import { SchedulesPosts } from "./../../../Classes/Services/PostServices/SchedulesPosts.js";
+import * as PostsToAutomateModule from "./../../../Classes/ValueObjects/PostsToAutomate.js";
 import pkg from "cron-parser";
 const parseExpression = pkg.parseExpression;
 
@@ -218,6 +219,14 @@ describe(SchedulesPosts, () => {
 
     const updateTaskScheduleSpy = jest.spyOn(dbMock, "updatePostTaskSchedule");
     updateTaskScheduleSpy.mockResolvedValue();
+
+    const getNextScheduleTimeSpy = jest.spyOn(
+      PostsToAutomateModule,
+      "getNextScheduledTime"
+    );
+    getNextScheduleTimeSpy.mockReturnValueOnce(
+      new Date("2023-08-25T04:00:00Z")
+    );
 
     await postSchedulerService.handlePostSchedule();
 

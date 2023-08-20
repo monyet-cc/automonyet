@@ -4,3 +4,4 @@ node_modules
 dist
 database.sqlite3
 yarn-error.log
+PostsToAutomate.json

@@ -26,7 +26,7 @@ export class CreatesPost {
         {
           name: this.generatePostTitle(post.title, post.dateFormat),
           community_id: communityIdentifier,
-          body: post.body,
+          body: post.body === null ? undefined : post.body,
         },
         "Community"
       );
