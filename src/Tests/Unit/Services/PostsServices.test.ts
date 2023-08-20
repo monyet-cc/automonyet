@@ -13,7 +13,62 @@ import { UnpinsPosts } from "../../../Classes/Services/PostServices/UnpinsPosts.
 import { SchedulesPosts } from "./../../../Classes/Services/PostServices/SchedulesPosts.js";
 import * as PostsToAutomateModule from "./../../../Classes/ValueObjects/PostsToAutomate.js";
 import pkg from "cron-parser";
+import { PostToCreate } from "./../../../Classes/ValueObjects/PostsToAutomate.js";
 const parseExpression = pkg.parseExpression;
+
+// Mocked data
+const mockPostsToAutomate: PostToCreate[] = [
+  {
+    category: "Daily Chat Thread",
+    communityName: "cafe",
+    body: undefined,
+    pinLocally: true,
+    cronExpression: "0 0 4 * * *",
+    timezone: "Asia/Kuala_Lumpur",
+    title: `/c/café daily chat thread for $date`,
+    dateFormat: "D MMMM YYYY",
+  },
+  {
+    category: "Daily Food Thread",
+    communityName: "food",
+    body: "Use this thread to share with us what you're having, from breakfast to second breakfast, brunch, lunch, tea time, dinner, supper! Don't be shy, all food are welcome! Image are encouraged!",
+    pinLocally: false,
+    cronExpression: "0 0 4 * * *",
+    timezone: "Asia/Kuala_Lumpur",
+    title: `Daily c/food Thread - Whatcha Having Today? $date`,
+    dateFormat: "Do MMMM, YYYY",
+  },
+  {
+    category: "Weekly Care Thread",
+    communityName: "mental_health",
+    body: undefined,
+    pinLocally: false,
+    cronExpression: "0 0 4 * * 1",
+    timezone: "Asia/Kuala_Lumpur",
+    title: `Mental Wellness Weekly Check-in Thread $date`,
+    dateFormat: "D MMMM YYYY",
+  },
+  {
+    category: "Weekly Movies Thread",
+    communityName: "movies",
+    body: "Tell us what you watched this week, whether movie, series, cdrama or Kdrama!",
+    pinLocally: false,
+    cronExpression: "0 0 4 * * 2",
+    timezone: "Asia/Kuala_Lumpur",
+    title: `What did you watch this week? ($date edition)`,
+    dateFormat: "Do MMM YYYY",
+  },
+  {
+    category: "Weekly Reading Thread",
+    communityName: "cafe",
+    body: "Tell us what you are currently reading, or what's on your reading list!",
+    pinLocally: false,
+    cronExpression: "0 0 4 * * 4",
+    timezone: "Asia/Kuala_Lumpur",
+    title: `What is your current read? $date`,
+    dateFormat: "D MMMM YYYY",
+  },
+];
 
 describe(CreatesPost, () => {
   it("Create Post Handling", async () => {
@@ -219,6 +274,9 @@ describe(SchedulesPosts, () => {
 
     const updateTaskScheduleSpy = jest.spyOn(dbMock, "updatePostTaskSchedule");
     updateTaskScheduleSpy.mockResolvedValue();
+
+    const loadPostsDataSpy = jest.spyOn(PostsToAutomateModule, "loadPostsData");
+    loadPostsDataSpy.mockResolvedValue(mockPostsToAutomate);
 
     const getNextScheduleTimeSpy = jest.spyOn(
       PostsToAutomateModule,

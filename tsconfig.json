@@ -13,7 +13,8 @@
     "types": ["reflect-metadata", "jest"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["es6", "dom"]
+    "lib": ["es6", "dom"],
+    "resolveJsonModule": true
   },
   "files": ["global.d.ts"],
   "include": ["src/**/*.ts"],

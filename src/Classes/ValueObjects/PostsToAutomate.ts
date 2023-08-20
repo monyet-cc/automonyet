@@ -13,12 +13,28 @@ export type PostToCreate = {
   dateFormat: string;
 };
 
-const loadPostsData = async (): Promise<PostToCreate[]> => {
+export const loadPostsData = async (): Promise<PostToCreate[]> => {
   try {
-    const data = await fs.readFile(
-      "src/Classes/ValueObjects/PostsToAutomate.json",
-      "utf-8"
-    );
+    // Check if the file exists
+    const filePath = "src/Classes/ValueObjects/PostsToAutomate.json";
+    const fileExists = await fs
+      .access(filePath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!fileExists) {
+      // Return a default value for tests
+      if (process.env.NODE_ENV === "test") {
+        return [];
+      }
+      console.error(
+        "PostsToAutomate file does not exist. No post schedules will be added."
+      );
+      return [];
+    }
+
+    // Read and parse the data
+    const data = await fs.readFile(filePath, "utf-8");
     return JSON.parse(data);
   } catch (error) {
     console.error("Error loading posts data:", error);

@@ -7,7 +7,18 @@
 2. Set up your env file(refer to .env.example). The bot must be hosted on the same machine where your lemmy instance is hosted.
 PG_HOST is the container name that hosts the postgres service. The BOT_USERNAME and BOT_PASSWORD will be used to login to your instance. It will create a new account if the account doesn't exist.
 
-3. Configure the src/Classes/ValueObjects/PostsToAutomate file. Below are the properties you need to configure for the posts.
+3. Configure the src/Classes/ValueObjects/PostsToAutomate.json file. Below are the properties you need to configure for the posts.
+Example: 
+>  [{
+    "category": "Daily Chat Thread",
+    "communityName": "cafe",
+    "body": null,
+    "pinLocally": true,
+    "cronExpression": "0 0 4 * * *",
+    "timezone": "Asia/Kuala_Lumpur",
+    "title": "/c/café daily chat thread for $date",
+    "dateFormat": "D MMMM YYYY"
+  }]
 - category: string; //the name of the 'type' of post you want to create. 
 - communityName: string; //the name of the community you want to post in. the community must exist, or it will throw a community not found error
 - body: string | undefined; //the post body. use `` to format your text in multiple lines. markdown input is supported.
