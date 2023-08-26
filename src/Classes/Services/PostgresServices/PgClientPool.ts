@@ -1,8 +1,8 @@
 import pg from "pg";
-import { pgClientConfig } from "../../ValueObjects/PostgresClientConfiguration.js";
+import { DatabaseConfiguration } from "../../Database/DatabaseConfiguration.js";
 
 export const pgClientPool = new pg.Pool({
-  ...pgClientConfig,
+  ...DatabaseConfiguration,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
