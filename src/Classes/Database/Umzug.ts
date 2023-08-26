@@ -1,5 +1,5 @@
 import { SequelizeStorage, Umzug } from "umzug";
-import { Sequelize } from "sequelize-typescript";
+import { DataType, Sequelize } from "sequelize-typescript";
 import { DataTypes } from "sequelize";
 import { createDatabaseConnection } from "./ConfiguresDatabaseConnection.js";
 
@@ -15,52 +15,72 @@ new Umzug({
         await context.createTable("pinned_post", {
           postId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
           },
           category: {
             type: DataTypes.STRING,
-            allowNull: false,
           },
           isLocallyPinned: {
             type: DataTypes.BOOLEAN,
-            allowNull: false,
-          },
-          createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-          },
-          updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
           },
         });
 
         await context.createTable("task_schedule", {
           category: {
             type: DataTypes.STRING,
-            allowNull: false,
           },
           nextScheduledTime: {
             type: DataTypes.DATE,
-            allowNull: false,
           },
           taskType: {
             type: DataTypes.STRING,
-            allowNull: false,
-          },
-          createdAt: {
-            type: DataTypes.DATE,
-            allowNull: false,
-          },
-          updatedAt: {
-            type: DataTypes.DATE,
-            allowNull: true,
           },
         });
       },
       async down({ context }) {
         await context.dropTable("pinned_post");
         await context.dropTable("task_schedule");
+      },
+    },
+    {
+      name: "20230826150300-create-automated-post",
+      async up({ context }) {
+        await context.createTable("automated_post", {
+          id: {
+            type: DataType.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+          },
+          category: {
+            type: DataType.STRING,
+          },
+          communityName: {
+            type: DataType.STRING,
+          },
+          cronExpression: {
+            type: DataType.STRING,
+          },
+          timezone: {
+            type: DataType.STRING,
+          },
+          dateFormat: {
+            type: DataType.STRING,
+          },
+          title: {
+            type: DataType.STRING,
+          },
+          body: {
+            type: DataType.TEXT,
+          },
+          isLocallyPinned: {
+            type: DataType.BOOLEAN,
+          },
+          isActive: {
+            type: DataType.BOOLEAN,
+          },
+        });
+      },
+      async down({ context }) {
+        await context.dropTable("automated_post");
       },
     },
   ],
