@@ -16,12 +16,12 @@
     "lint": "npx eslint .",
     "lint-fix": "npx eslint . --fix",
     "build": "tsc",
-    "start": "npm run build && node ./dist/index.js",
-    "dev": "npx nodemon -e ts -w src/ --exec 'npm run start'",
-    "watch": "npx nodemon -e ts -w src/ --exec 'npm run build'",
+    "start": "yarn run build && node ./dist/index.js",
+    "dev": "npx nodemon -e ts -w src/ --exec 'yarn run start'",
+    "watch": "npx nodemon -e ts -w src/ --exec 'yarn run build'",
     "test": "jest",
-    "migrate-up": "npm run build && node dist/Classes/Database/Umzug.js up",
-    "migrate-down": "npm run build && node dist/Classes/Database/Umzug.js down"
+    "migrate-up": "yarn run build && node dist/Classes/Database/Umzug.js up",
+    "migrate-down": "yarn run build && node dist/Classes/Database/Umzug.js down"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
