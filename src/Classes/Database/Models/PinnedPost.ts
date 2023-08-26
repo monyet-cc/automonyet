@@ -6,7 +6,7 @@ export class PinnedPost extends Model<PinnedPost> {
   @Column(DataType.INTEGER)
   postId!: string;
 
-  @Column(DataType.STRING(30))
+  @Column(DataType.STRING)
   category!: string;
 
   @Column(DataType.BOOLEAN)
