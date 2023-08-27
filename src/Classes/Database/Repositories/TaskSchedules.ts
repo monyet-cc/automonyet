@@ -1,5 +1,5 @@
 import { TaskSchedule } from "../Models/TaskSchedule.js";
-import { CreationAttributes, Op, Sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import { provide } from "inversify-binding-decorators";
 
 @provide(TaskSchedules)
@@ -24,12 +24,6 @@ export class TaskSchedules {
     });
   }
 
-  async create(
-    params: CreationAttributes<TaskSchedule>
-  ): Promise<TaskSchedule> {
-    return await TaskSchedule.create(params);
-  }
-
   async setNextScheduledTimeByCategory(
     nextScheduledTime: Date,
     category: string
@@ -38,5 +32,9 @@ export class TaskSchedules {
       { nextScheduledTime: nextScheduledTime },
       { where: { category: category } }
     );
+  }
+
+  async getAll(): Promise<TaskSchedule[]> {
+    return TaskSchedule.findAll();
   }
 }
