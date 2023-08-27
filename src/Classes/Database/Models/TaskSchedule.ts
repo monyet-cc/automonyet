@@ -1,8 +1,11 @@
 import { Model } from "sequelize";
-import { Column, DataType, Table } from "sequelize-typescript";
+import { Column, DataType, PrimaryKey, Table } from "sequelize-typescript";
 
 @Table({ tableName: "task_schedule" })
-export class TaskSchedule extends Model<TaskSchedule> {
+export class TaskSchedule extends Model {
+  @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
+  id!: number;
+
   @Column(DataType.STRING)
   category!: string;
 

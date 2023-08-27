@@ -13,6 +13,11 @@ new Umzug({
       name: "20230825092240-init",
       async up({ context }) {
         await context.createTable("pinned_post", {
+          id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+          },
           postId: {
             type: DataTypes.INTEGER,
           },
@@ -25,6 +30,11 @@ new Umzug({
         });
 
         await context.createTable("task_schedule", {
+          id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+          },
           category: {
             type: DataTypes.STRING,
           },
