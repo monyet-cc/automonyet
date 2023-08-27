@@ -5,6 +5,15 @@ import { createDatabaseConnection } from "./ConfiguresDatabaseConnection.js";
 
 const databaseConnection: Sequelize = createDatabaseConnection();
 
+const timestampFields = {
+  createdAt: {
+    type: DataTypes.DATE,
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+  },
+};
+
 // This is a standalone file intended to be used as the migrator tool
 // see `npm run migrate-up` and `npm run migrate-down`
 new Umzug({
@@ -27,6 +36,7 @@ new Umzug({
           isLocallyPinned: {
             type: DataTypes.BOOLEAN,
           },
+          ...timestampFields,
         });
 
         await context.createTable("task_schedule", {
@@ -44,6 +54,7 @@ new Umzug({
           taskType: {
             type: DataTypes.STRING,
           },
+          ...timestampFields,
         });
       },
       async down({ context }) {
@@ -87,6 +98,7 @@ new Umzug({
           isActive: {
             type: DataType.BOOLEAN,
           },
+          ...timestampFields,
         });
       },
       async down({ context }) {
