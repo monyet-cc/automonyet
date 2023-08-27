@@ -1,5 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
 import { DatabaseConfiguration as configuration } from "./DatabaseConfiguration.js";
+import { AutomatedPost } from "./Models/AutomatedPost.js";
+import { PinnedPost } from "./Models/PinnedPost.js";
+import { TaskSchedule } from "./Models/TaskSchedule.js";
 
 export function createDatabaseConnection(): Sequelize {
   new Sequelize(
@@ -16,7 +19,11 @@ export function createDatabaseConnection(): Sequelize {
 
   return new Sequelize(
     `${configuration.type}://${configuration.username}:${configuration.password}@${configuration.host}:${configuration.port}/${configuration.database}`,
-    { schema: configuration.schema, dialect: "postgres" }
+    {
+      schema: configuration.schema,
+      dialect: "postgres",
+      models: [AutomatedPost, PinnedPost, TaskSchedule],
+    }
   );
 }
 
@@ -28,7 +35,5 @@ try {
 } catch (error) {
   console.error("Unable to connect to the database:", error);
 }
-
-databaseConnection.addModels(["./Database/Models"]);
 
 export { databaseConnection };
