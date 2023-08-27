@@ -49,8 +49,9 @@ export class SchedulesPosts {
 
   public async handlePostSchedule(): Promise<void> {
     try {
-      const postsToSchedule: TaskSchedule[] | undefined =
-        await this.dbservice.getScheduledTasks("postsToAutomate");
+      const postsToSchedule = await this.dbservice.getScheduledTasks(
+        "postsToAutomate"
+      );
 
       if (postsToSchedule !== undefined) {
         for (const post of postsToSchedule) {

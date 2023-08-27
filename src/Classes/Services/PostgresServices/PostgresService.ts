@@ -4,6 +4,7 @@ import {
   getNextScheduledTime,
   getPostsToSchedule,
 } from "../../ValueObjects/PostsToAutomate.js";
+import { TaskSchedules } from "../../Database/Repositories/TaskSchedules.js";
 
 export type OverduePostPin = {
   postId: number;
@@ -17,6 +18,8 @@ type TaskSchedule = {
 
 @provide(PostgresService)
 export class PostgresService {
+  constructor(private taskSchedules: TaskSchedules) {}
+
   async initPostScheduleTasks(): Promise<void> {
     const client = await pool.connect();
     try {
@@ -80,28 +83,8 @@ export class PostgresService {
     }
   }
 
-  async getScheduledTasks(
-    taskType: string
-  ): Promise<TaskSchedule[] | undefined> {
-    const client = await pool.connect();
-    try {
-      const params = [taskType];
-      const getScheduledTasksQuery = `
-        SELECT category, nextScheduledTime FROM LemmyBot.taskSchedule where taskType = $1 and nextScheduledTime <= NOW();
-      `;
-      const result = await client.query(getScheduledTasksQuery, params);
-
-      const scheduledTasks: TaskSchedule[] = result.rows.map((row) => ({
-        category: row.category,
-        nextScheduledTime: row.nextscheduledtime,
-      }));
-
-      return scheduledTasks;
-    } catch (err) {
-      console.error("Error: failed to get task schedules ", err);
-    } finally {
-      client.release();
-    }
+  async getScheduledTasks(taskType: string): Promise<TaskSchedule[]> {
+    return this.taskSchedules.getScheduledTasksByTaskType(taskType);
   }
 
   async getCurrentlyPinnedPosts(
