@@ -9,7 +9,7 @@ export class PinnedPosts {
   }
 
   async create(params: CreationAttributes<PinnedPost>): Promise<PinnedPost> {
-    return await PinnedPost.create<PinnedPost>(params);
+    return await PinnedPost.create(params);
   }
 
   async removeByCategory(category: string): Promise<void> {

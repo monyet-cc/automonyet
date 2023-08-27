@@ -1,5 +1,5 @@
 import { TaskSchedule } from "../Models/TaskSchedule.js";
-import { Op, Sequelize } from "sequelize";
+import { CreationAttributes, Op, Sequelize } from "sequelize";
 import { provide } from "inversify-binding-decorators";
 
 @provide(TaskSchedules)
@@ -36,5 +36,11 @@ export class TaskSchedules {
 
   async getAll(): Promise<TaskSchedule[]> {
     return TaskSchedule.findAll();
+  }
+
+  async create(
+    params: CreationAttributes<TaskSchedule>
+  ): Promise<TaskSchedule> {
+    return TaskSchedule.create(params);
   }
 }

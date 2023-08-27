@@ -7,6 +7,6 @@ export class AutomatedPosts {
   async create(
     params: CreationAttributes<AutomatedPost>
   ): Promise<AutomatedPost> {
-    return await AutomatedPost.create<AutomatedPost>(params);
+    return await AutomatedPost.create(params);
   }
 }
