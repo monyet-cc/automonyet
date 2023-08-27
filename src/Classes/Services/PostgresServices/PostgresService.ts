@@ -10,33 +10,13 @@ export type OverduePostPin = {
   isLocallyPinned: boolean;
 };
 
-export type TaskSchedule = {
+type TaskSchedule = {
   category: string;
   nextScheduledTime: Date;
 };
 
 @provide(PostgresService)
 export class PostgresService {
-  async initDBSchema(): Promise<void> {
-    const client = await pool.connect();
-    try {
-      // Initialize schema and tables if not created
-      const initDbQuery = `
-          CREATE SCHEMA IF NOT EXISTS LemmyBot AUTHORIZATION lemmy;
-          CREATE TABLE IF NOT EXISTS LemmyBot.currentlyPinnedPosts (postId integer, category varchar(30), isLocallyPinned boolean);
-          CREATE TABLE IF NOT EXISTS LemmyBot.taskSchedule (category varchar(30), nextScheduledTime timestamptz, taskType varchar(30));
-        `;
-      await client.query(initDbQuery);
-    } catch (err) {
-      console.error(
-        "Error: failed to create schema and tables required for lemmy bot. ",
-        err
-      );
-    } finally {
-      client.release();
-    }
-  }
-
   async initPostScheduleTasks(): Promise<void> {
     const client = await pool.connect();
     try {

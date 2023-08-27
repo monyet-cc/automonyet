@@ -249,15 +249,10 @@ describe(SchedulesPosts, () => {
     );
   });
   it("Handle Post Schedule", async () => {
-    const clientMock = mock(LemmyApi);
     const dbMock = mock(PostgresService);
     const renewPostMock = mock(RenewsPosts);
 
-    const postSchedulerService = new SchedulesPosts(
-      clientMock,
-      dbMock,
-      renewPostMock
-    );
+    const postSchedulerService = new SchedulesPosts(dbMock, renewPostMock);
 
     const taskSchedules: TaskSchedule[] = [
       {
@@ -293,7 +288,6 @@ describe(SchedulesPosts, () => {
     expect(dbMock.updatePostTaskSchedule).toHaveBeenCalledTimes(1);
   });
   it("Creates Bot Tasks", async () => {
-    const clientMock = mock(LemmyApi);
     const dbMock = mock(PostgresService);
     const renewPostMock = mock(RenewsPosts);
 
@@ -303,11 +297,7 @@ describe(SchedulesPosts, () => {
     );
     initPostScheduleTasksSpy.mockResolvedValue();
 
-    const postSchedulerService = new SchedulesPosts(
-      clientMock,
-      dbMock,
-      renewPostMock
-    );
+    const postSchedulerService = new SchedulesPosts(dbMock, renewPostMock);
 
     const botTasks = await postSchedulerService.createBotTasks();
 

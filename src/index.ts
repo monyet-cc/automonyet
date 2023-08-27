@@ -6,7 +6,6 @@ import { SchedulesPostsHandling } from "./Classes/Handlers/PrivateMessages/Sched
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
 import { SchedulesPosts } from "./Classes/Services/PostServices/SchedulesPosts.js";
-import { PostgresService } from "./Classes/Services/PostgresServices/PostgresService.js";
 
 const { LemmyBot } = packages;
 
@@ -20,9 +19,6 @@ const privateMessageHandlers: HandlesPrivateMessage[] = [
 
 // initialise services
 const postSchedulerService: SchedulesPosts = container.get(SchedulesPosts);
-
-// initialise database
-await new PostgresService().initDBSchema();
 
 // initialise the bot
 const bot: packages.LemmyBot = new LemmyBot({
