@@ -1,8 +1,7 @@
-import { Column, DataType, Table } from "sequelize-typescript";
-import { Model } from "sequelize"; //    > [{
+import { Column, DataType, Model, Table } from "sequelize-typescript";
 
 @Table({ tableName: "automated_post" })
-export class AutomatedPost extends Model<AutomatedPost> {
+export class AutomatedPost extends Model {
   @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
   id!: number;
 

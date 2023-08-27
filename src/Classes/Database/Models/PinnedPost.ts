@@ -1,8 +1,7 @@
-import { Column, DataType, PrimaryKey, Table } from "sequelize-typescript";
-import { Model } from "sequelize";
+import { Column, DataType, Table, Model } from "sequelize-typescript";
 
 @Table({ tableName: "pinned_post" })
-export class PinnedPost extends Model<PinnedPost> {
+export class PinnedPost extends Model {
   @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
   id!: number;
 
