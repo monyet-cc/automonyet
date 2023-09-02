@@ -15,13 +15,18 @@ export class TaskSchedules {
     return results.map((result) => result.category);
   }
 
-  async getScheduledTasksByTaskType(taskType: string): Promise<TaskSchedule[]> {
-    return await TaskSchedule.findAll({
+  async getScheduledTasksByTaskType(
+    taskType: string
+  ): Promise<CreationAttributes<TaskSchedule>[]> {
+    const results = await TaskSchedule.findAll({
       where: {
         taskType: taskType,
         nextScheduledTime: { [Op.lte]: Sequelize.fn("NOW") },
       },
     });
+    return results.map(
+      (task) => task.toJSON() as CreationAttributes<TaskSchedule>
+    );
   }
 
   async setNextScheduledTimeByCategory(
@@ -40,7 +45,8 @@ export class TaskSchedules {
 
   async create(
     params: CreationAttributes<TaskSchedule>
-  ): Promise<TaskSchedule> {
-    return TaskSchedule.create(params);
+  ): Promise<CreationAttributes<TaskSchedule>> {
+    const result = await TaskSchedule.create(params);
+    return result.toJSON() as CreationAttributes<TaskSchedule>;
   }
 }

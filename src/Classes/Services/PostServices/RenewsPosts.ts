@@ -1,31 +1,28 @@
 import { provide } from "inversify-binding-decorators";
-import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
-import { PostgresService } from "../PostgresServices/PostgresService.js";
 import { getPost } from "../../ValueObjects/PostsToAutomate.js";
 import { UnpinsPosts } from "./UnpinsPosts.js";
 import { CreatesPost } from "./CreatesPost.js";
+import { PinnedPosts } from "../../Database/Repositories/PinnedPosts.js";
 
 @provide(RenewsPosts)
 export class RenewsPosts {
   constructor(
-    private readonly client: LemmyApi,
-    private readonly dbservice: PostgresService,
+    private readonly pinnedPostRepository: PinnedPosts,
     private readonly createsPostService: CreatesPost,
     private readonly unpinsPostservice: UnpinsPosts
   ) {}
 
   public async renewPosts(postCategory: string): Promise<void> {
     try {
-      const currentlyPinnedPosts = await this.dbservice.getCurrentlyPinnedPosts(
-        postCategory
-      );
+      const currentlyPinnedPosts =
+        await this.pinnedPostRepository.getByCategory(postCategory);
 
       if (currentlyPinnedPosts !== undefined) {
         const unpinnedPostIds = await this.unpinsPostservice.unpinPosts(
           currentlyPinnedPosts
         );
         if (unpinnedPostIds.length > 0)
-          await this.dbservice.clearUnpinnedPosts(postCategory);
+          await this.pinnedPostRepository.removeByCategory(postCategory);
       }
 
       await this.createsPostService.handlePostCreation(getPost(postCategory));

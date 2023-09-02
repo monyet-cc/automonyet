@@ -1,6 +1,5 @@
 import { provide } from "inversify-binding-decorators";
 import { BotTask } from "lemmy-bot";
-import { PostgresService } from "../PostgresServices/PostgresService.js";
 import { RenewsPosts } from "./RenewsPosts.js";
 import {
   getNextScheduledTime,
@@ -13,14 +12,15 @@ import { CreationAttributes } from "sequelize";
 @provide(SchedulesPosts)
 export class SchedulesPosts {
   constructor(
-    private readonly dbservice: PostgresService,
-    private readonly taskScheduleService: TaskSchedules,
+    private readonly taskScheduleRepository: TaskSchedules,
     private readonly renewPostService: RenewsPosts
   ) {}
 
   private async initPostScheduleTasks(): Promise<void> {
     const postCategories =
-      await this.taskScheduleService.getCategoriesByTaskType("postsToAutomate");
+      await this.taskScheduleRepository.getCategoriesByTaskType(
+        "postsToAutomate"
+      );
     const postsToSchedule = getPostsToSchedule(postCategories);
     if (postsToSchedule !== undefined) {
       for (const post of postsToSchedule) {
@@ -29,7 +29,7 @@ export class SchedulesPosts {
           nextScheduledTime: getNextScheduledTime(post.category),
           taskType: "postsToAutomate",
         };
-        await TaskSchedule.create(params);
+        await this.taskScheduleRepository.create(params);
       }
     }
   }
@@ -49,15 +49,16 @@ export class SchedulesPosts {
 
   public async handlePostSchedule(): Promise<void> {
     try {
-      const postsToSchedule = await this.dbservice.getScheduledTasks(
-        "postsToAutomate"
-      );
+      const postsToSchedule =
+        await this.taskScheduleRepository.getScheduledTasksByTaskType(
+          "postsToAutomate"
+        );
 
       if (postsToSchedule !== undefined) {
         for (const post of postsToSchedule) {
           this.renewPostService.renewPosts(post.category);
 
-          await this.dbservice.updatePostTaskSchedule(
+          await this.taskScheduleRepository.setNextScheduledTimeByCategory(
             getNextScheduledTime(post.category),
             post.category
           );
