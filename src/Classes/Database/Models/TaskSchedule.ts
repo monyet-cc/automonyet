@@ -1,6 +1,6 @@
 import { Column, DataType, Table, Model } from "sequelize-typescript";
 
-@Table({ tableName: "task_schedule" })
+@Table({ schema: "lemmyboy", tableName: "task_schedule" })
 export class TaskSchedule extends Model {
   @Column({ type: DataType.INTEGER, autoIncrement: true, primaryKey: true })
   id!: number;
