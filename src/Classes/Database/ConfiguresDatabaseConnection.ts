@@ -17,7 +17,7 @@ export function createDatabaseConnection(): Sequelize {
     }
   );
 
-  return new Sequelize(
+  const sequelize = new Sequelize(
     `${configuration.type}://${configuration.username}:${configuration.password}@${configuration.host}:${configuration.port}/${configuration.database}`,
     {
       schema: configuration.schema,
@@ -25,6 +25,8 @@ export function createDatabaseConnection(): Sequelize {
       models: [AutomatedPost, PinnedPost, TaskSchedule],
     }
   );
+  sequelize.sync({ force: false });
+  return sequelize;
 }
 
 const databaseConnection: Sequelize = createDatabaseConnection();
