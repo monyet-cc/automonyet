@@ -46,7 +46,7 @@ export class SchedulesPosts {
         },
       });
     } catch (error) {
-      console.log("Error initializing bot tasks.");
+      console.log("Error initializing bot tasks: " + error);
     }
     return botTasks;
   }
