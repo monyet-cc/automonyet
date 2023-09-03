@@ -21,7 +21,9 @@
     "watch": "npx nodemon -e ts -w src/ --exec 'yarn run build'",
     "test": "jest",
     "migrate-up": "yarn run build && NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js up",
-    "migrate-down": "yarn run build && NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js down"
+    "migrate-down": "yarn run build && NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js down",
+    "migrate-up-dev": "NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js up",
+    "migrate-down-dev": "NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js down"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
