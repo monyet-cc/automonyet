@@ -11,11 +11,15 @@ export class UnpinsPosts {
     postsToUnpin: CreationAttributes<PinnedPost>[]
   ): Promise<number[]> {
     const unpinnedPostIds: number[] = [];
-    for (const post of postsToUnpin) {
-      await this.client.featurePost(post.id, "Community", false);
-      if (post.isLocallyPinned)
-        await this.client.featurePost(post.id, "Local", false);
-      unpinnedPostIds.push(post.id);
+    try {
+      for (const post of postsToUnpin) {
+        await this.client.featurePost(post.id, "Community", false);
+        if (post.isLocallyPinned)
+          await this.client.featurePost(post.id, "Local", false);
+        unpinnedPostIds.push(post.id);
+      }
+    } catch (error) {
+      console.log("Error occurred while attempting to unpin posts");
     }
 
     return unpinnedPostIds;

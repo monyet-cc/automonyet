@@ -35,15 +35,19 @@ export class SchedulesPosts {
   }
 
   public async createBotTasks(): Promise<BotTask[]> {
-    await this.initPostScheduleTasks();
     const botTasks: BotTask[] = [];
-    botTasks.push({
-      cronExpression: "0 5 * * * *",
-      timezone: "Asia/Kuala_Lumpur",
-      doTask: async () => {
-        return this.handlePostSchedule();
-      },
-    });
+    try {
+      await this.initPostScheduleTasks();
+      botTasks.push({
+        cronExpression: "0 5 * * * *",
+        timezone: "Asia/Kuala_Lumpur",
+        doTask: async () => {
+          return this.handlePostSchedule();
+        },
+      });
+    } catch (error) {
+      console.log("Error initializing bot tasks.");
+    }
     return botTasks;
   }
 
