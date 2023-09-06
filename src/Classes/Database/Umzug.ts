@@ -21,8 +21,6 @@ new Umzug({
     {
       name: "20230825092240-init",
       async up({ context }) {
-        await context.createSchema("lemmybot");
-        await context.sequelize.query(`SET search_path to lemmybot`);
         await context.createTable("pinned_post", {
           id: {
             type: DataTypes.INTEGER,
@@ -60,7 +58,6 @@ new Umzug({
         });
       },
       async down({ context }) {
-        await context.sequelize.query(`SET search_path to lemmybot`);
         await context.dropTable("pinned_post");
         await context.dropTable("task_schedule");
       },
@@ -68,8 +65,6 @@ new Umzug({
     {
       name: "20230826150300-create-automated-post",
       async up({ context }) {
-        await context.createSchema("lemmybot");
-        await context.sequelize.query(`SET search_path to lemmybot`);
         await context.createTable("automated_post", {
           id: {
             type: DataType.INTEGER,
@@ -107,7 +102,6 @@ new Umzug({
         });
       },
       async down({ context }) {
-        await context.sequelize.query(`SET search_path to lemmybot`);
         await context.dropTable("automated_post");
       },
     },

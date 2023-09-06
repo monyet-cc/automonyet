@@ -11,7 +11,6 @@ export function createDatabaseConnection(): Sequelize {
     configuration.password,
     {
       dialect: configuration.type,
-      schema: configuration.schema,
       port: configuration.port,
       host: configuration.host,
     }
@@ -20,7 +19,6 @@ export function createDatabaseConnection(): Sequelize {
   return new Sequelize(
     `${configuration.type}://${configuration.username}:${configuration.password}@${configuration.host}:${configuration.port}/${configuration.database}`,
     {
-      schema: configuration.schema,
       dialect: "postgres",
       models: [AutomatedPost, PinnedPost, TaskSchedule],
     }
