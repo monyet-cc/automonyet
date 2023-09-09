@@ -1,12 +1,8 @@
-import { TaskSchedule } from "../../../Classes/Services/PostgresServices/PostgresService.js";
+import { CreationAttributes } from "sequelize";
 import "reflect-metadata";
 import { anything, capture, instance, mock, verify, when } from "ts-mockito";
 import { LemmyApi } from "../../../Classes/ValueObjects/LemmyApi.js";
 import moment from "moment";
-import {
-  PostgresService,
-  OverduePostPin,
-} from "../../../Classes/Services/PostgresServices/PostgresService.js";
 import { RenewsPosts } from "../../../Classes/Services/PostServices/RenewsPosts.js";
 import { CreatesPost } from "../../../Classes/Services/PostServices/CreatesPost.js";
 import { UnpinsPosts } from "../../../Classes/Services/PostServices/UnpinsPosts.js";
@@ -14,6 +10,10 @@ import { SchedulesPosts } from "./../../../Classes/Services/PostServices/Schedul
 import * as PostsToAutomateModule from "./../../../Classes/ValueObjects/PostsToAutomate.js";
 import pkg from "cron-parser";
 import { PostToCreate } from "./../../../Classes/ValueObjects/PostsToAutomate.js";
+import { TaskSchedules } from "../../../Classes/Database/Repositories/TaskSchedules.js";
+import { PinnedPosts } from "../../../Classes/Database/Repositories/PinnedPosts.js";
+import { PinnedPost } from "../../../Classes/Database/Models/PinnedPost.js";
+import { TaskSchedule } from "../../../Classes/Database/Models/TaskSchedule.js";
 const parseExpression = pkg.parseExpression;
 
 // Mocked data
@@ -87,7 +87,7 @@ describe(CreatesPost, () => {
     };
 
     const clientMock = mock(LemmyApi);
-    const postgresServiceMock = mock(PostgresService);
+    const pinnedPostRepositoryMock = mock(PinnedPosts);
 
     when(clientMock.getCommunityIdentifier("cafe")).thenResolve(
       expectedCommunityId
@@ -101,13 +101,11 @@ describe(CreatesPost, () => {
       expectedPostId
     );
 
-    when(
-      postgresServiceMock.setPostAutoRemoval(anything(), anything(), anything())
-    ).thenResolve();
+    when(pinnedPostRepositoryMock.create(anything())).thenResolve();
 
     const service = new CreatesPost(
       instance(clientMock),
-      instance(postgresServiceMock)
+      instance(pinnedPostRepositoryMock)
     );
 
     await service.handlePostCreation(post);
@@ -115,9 +113,7 @@ describe(CreatesPost, () => {
     verify(clientMock.getCommunityIdentifier(expectedCommunityName)).once();
     verify(clientMock.createFeaturedPost(anything(), "Community")).once();
     verify(clientMock.featurePost(anything(), "Local", true)).once();
-    verify(
-      postgresServiceMock.setPostAutoRemoval(anything(), anything(), anything())
-    ).once();
+    verify(pinnedPostRepositoryMock.create(anything())).once();
 
     const [communityNameArgument] = capture(
       clientMock.getCommunityIdentifier
@@ -143,10 +139,10 @@ describe(CreatesPost, () => {
 describe(UnpinsPosts, () => {
   it("Unpins", async () => {
     const clientMock = mock(LemmyApi);
-    const currentlyPinnedPosts: OverduePostPin[] = [
-      { postId: 0, isLocallyPinned: true },
-      { postId: 1, isLocallyPinned: false },
-      { postId: 2, isLocallyPinned: true },
+    const currentlyPinnedPosts: CreationAttributes<PinnedPost>[] = [
+      { id: 0, category: "", isLocallyPinned: true },
+      { id: 1, category: "", isLocallyPinned: false },
+      { id: 2, category: "", isLocallyPinned: true },
     ];
 
     when(
@@ -164,17 +160,17 @@ describe(RenewsPosts, () => {
   it("Get Currently Pinned Posts", async () => {
     try {
       const clientMock = mock(LemmyApi);
-      const dbMock = mock(PostgresService);
+      const pinnedPostRepositoryMock = mock(PinnedPosts);
 
-      const currentlyPinnedPosts: OverduePostPin[] = [
-        { postId: 0, isLocallyPinned: true },
-        { postId: 1, isLocallyPinned: false },
-        { postId: 2, isLocallyPinned: true },
+      const currentlyPinnedPosts: CreationAttributes<PinnedPost>[] = [
+        { id: 0, category: "Daily Chat Thread", isLocallyPinned: true },
+        { id: 1, category: "Daily Chat Thread", isLocallyPinned: false },
+        { id: 2, category: "Daily Chat Thread", isLocallyPinned: true },
       ];
 
       const getCurrentlyPinnedPostsSpy = jest.spyOn(
-        dbMock,
-        "getCurrentlyPinnedPosts"
+        pinnedPostRepositoryMock,
+        "getByCategory"
       );
       getCurrentlyPinnedPostsSpy.mockResolvedValue(currentlyPinnedPosts);
 
@@ -182,7 +178,7 @@ describe(RenewsPosts, () => {
         clientMock.featurePost(anything(), anything(), anything())
       ).thenResolve();
 
-      const postsToUnpin = await dbMock.getCurrentlyPinnedPosts(
+      const postsToUnpin = await pinnedPostRepositoryMock.getByCategory(
         "Daily Chat Thread"
       );
 
@@ -192,41 +188,42 @@ describe(RenewsPosts, () => {
     }
   });
   it("Renews Daily/Weekly Posts", async () => {
-    const clientMock = mock(LemmyApi);
-    const dbMock = mock(PostgresService);
+    const pinnedPostRepositoryMock = mock(PinnedPosts);
     const createsPostServiceMock = mock(CreatesPost);
     const unpinsPostServiceMock = mock(UnpinsPosts);
 
-    const currentlyPinnedPosts: OverduePostPin[] = [
-      { postId: 0, isLocallyPinned: true },
-      { postId: 1, isLocallyPinned: false },
-      { postId: 2, isLocallyPinned: true },
+    const currentlyPinnedPosts: CreationAttributes<PinnedPost>[] = [
+      { id: 0, category: "Daily Chat Thread", isLocallyPinned: true },
+      { id: 1, category: "Daily Chat Thread", isLocallyPinned: false },
+      { id: 2, category: "Daily Chat Thread", isLocallyPinned: true },
     ];
 
     const getCurrentlyPinnedPostsSpy = jest.spyOn(
-      dbMock,
-      "getCurrentlyPinnedPosts"
+      pinnedPostRepositoryMock,
+      "getByCategory"
     );
     getCurrentlyPinnedPostsSpy.mockResolvedValue(currentlyPinnedPosts);
 
     const unpinPostsSpy = jest.spyOn(unpinsPostServiceMock, "unpinPosts");
     unpinPostsSpy.mockResolvedValue([0, 1, 2]);
 
-    const clearUnpinnedPostsSpy = jest.spyOn(dbMock, "clearUnpinnedPosts");
+    const clearUnpinnedPostsSpy = jest.spyOn(
+      pinnedPostRepositoryMock,
+      "removeByCategory"
+    );
     clearUnpinnedPostsSpy.mockResolvedValue();
 
     const renewPostService = new RenewsPosts(
-      clientMock,
-      dbMock,
+      pinnedPostRepositoryMock,
       createsPostServiceMock,
       unpinsPostServiceMock
     );
 
     await renewPostService.renewPosts("Daily Chat Thread");
 
-    expect(dbMock.getCurrentlyPinnedPosts).toHaveBeenCalledTimes(1);
+    expect(pinnedPostRepositoryMock.getByCategory).toHaveBeenCalledTimes(1);
     expect(unpinsPostServiceMock.unpinPosts).toHaveBeenCalledTimes(1);
-    expect(dbMock.clearUnpinnedPosts).toHaveBeenCalledTimes(1);
+    expect(pinnedPostRepositoryMock.removeByCategory).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -249,30 +246,36 @@ describe(SchedulesPosts, () => {
     );
   });
   it("Handle Post Schedule", async () => {
-    const clientMock = mock(LemmyApi);
-    const dbMock = mock(PostgresService);
+    const taskScheduleRepositoryMock = mock(TaskSchedules);
     const renewPostMock = mock(RenewsPosts);
 
     const postSchedulerService = new SchedulesPosts(
-      clientMock,
-      dbMock,
+      taskScheduleRepositoryMock,
       renewPostMock
     );
 
-    const taskSchedules: TaskSchedule[] = [
+    const taskSchedules = [
       {
+        id: 0,
         category: "Daily Chat Thread",
-        nextScheduledTime: new Date(),
+        date: new Date(),
+        taskType: "postsToAutomate",
       },
     ];
 
-    const getScheduledTasksSpy = jest.spyOn(dbMock, "getScheduledTasks");
+    const getScheduledTasksSpy = jest.spyOn(
+      taskScheduleRepositoryMock,
+      "getScheduledTasksByTaskType"
+    );
     getScheduledTasksSpy.mockResolvedValue(taskSchedules);
 
     const renewPostsSpy = jest.spyOn(renewPostMock, "renewPosts");
     renewPostsSpy.mockResolvedValue();
 
-    const updateTaskScheduleSpy = jest.spyOn(dbMock, "updatePostTaskSchedule");
+    const updateTaskScheduleSpy = jest.spyOn(
+      taskScheduleRepositoryMock,
+      "setNextScheduledTimeByCategory"
+    );
     updateTaskScheduleSpy.mockResolvedValue();
 
     const loadPostsDataSpy = jest.spyOn(PostsToAutomateModule, "loadPostsData");
@@ -288,31 +291,67 @@ describe(SchedulesPosts, () => {
 
     await postSchedulerService.handlePostSchedule();
 
-    expect(dbMock.getScheduledTasks).toHaveBeenCalledTimes(1);
+    expect(
+      taskScheduleRepositoryMock.getScheduledTasksByTaskType
+    ).toHaveBeenCalledTimes(1);
     expect(renewPostMock.renewPosts).toHaveBeenCalledTimes(1);
-    expect(dbMock.updatePostTaskSchedule).toHaveBeenCalledTimes(1);
+    expect(
+      taskScheduleRepositoryMock.setNextScheduledTimeByCategory
+    ).toHaveBeenCalledTimes(1);
   });
   it("Creates Bot Tasks", async () => {
-    const clientMock = mock(LemmyApi);
-    const dbMock = mock(PostgresService);
-    const renewPostMock = mock(RenewsPosts);
+    const taskScheduleRepositoryMock = mock(TaskSchedules);
 
-    const initPostScheduleTasksSpy = jest.spyOn(
-      dbMock,
-      "initPostScheduleTasks"
+    const getCategoriesByTaskTypeSpy = jest.spyOn(
+      taskScheduleRepositoryMock,
+      "getCategoriesByTaskType"
     );
-    initPostScheduleTasksSpy.mockResolvedValue();
+    getCategoriesByTaskTypeSpy.mockResolvedValue(["Daily Chat Thread"]);
 
-    const postSchedulerService = new SchedulesPosts(
-      clientMock,
-      dbMock,
-      renewPostMock
+    const taskScheduleRes = {
+      id: 0,
+      category: "Daily Chat Thread",
+      date: new Date(),
+      taskType: "postsToAutomate",
+    };
+
+    const createTaskScheduleSpy = jest.spyOn(
+      taskScheduleRepositoryMock,
+      "create"
     );
+    createTaskScheduleSpy.mockResolvedValue(taskScheduleRes);
 
-    const botTasks = await postSchedulerService.createBotTasks();
+    const postCategories =
+      await taskScheduleRepositoryMock.getCategoriesByTaskType(
+        "postsToAutomate"
+      );
+    const postsToSchedule = [
+      {
+        category: "Daily Chat Thread",
+        communityName: "cafe",
+        body: undefined,
+        pinLocally: true,
+        cronExpression: "0 0 4 * * *",
+        timezone: "Asia/Kuala_Lumpur",
+        title: `/c/café daily chat thread for $date`,
+        dateFormat: "D MMMM YYYY",
+      },
+    ];
 
-    expect(Array.isArray(botTasks)).toBe(true);
-    expect(botTasks.length).toBe(1);
-    expect(dbMock.initPostScheduleTasks).toHaveBeenCalledTimes(1);
+    if (postsToSchedule !== undefined) {
+      for (const post of postsToSchedule) {
+        const params: CreationAttributes<TaskSchedule> = {
+          category: post.category,
+          nextScheduledTime: new Date(),
+          taskType: "postsToAutomate",
+        };
+        await taskScheduleRepositoryMock.create(params);
+      }
+    }
+    expect(
+      taskScheduleRepositoryMock.getCategoriesByTaskType
+    ).toHaveBeenCalledTimes(1);
+    expect(taskScheduleRepositoryMock.create).toHaveBeenCalledTimes(1);
+    expect(postCategories.length).toBe(1);
   });
 });

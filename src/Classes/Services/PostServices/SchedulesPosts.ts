@@ -1,44 +1,68 @@
 import { provide } from "inversify-binding-decorators";
-import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
 import { BotTask } from "lemmy-bot";
-import {
-  PostgresService,
-  TaskSchedule,
-} from "../PostgresServices/PostgresService.js";
 import { RenewsPosts } from "./RenewsPosts.js";
-import { getNextScheduledTime } from "../../ValueObjects/PostsToAutomate.js";
+import {
+  getNextScheduledTime,
+  getPostsToSchedule,
+} from "../../ValueObjects/PostsToAutomate.js";
+import { TaskSchedules } from "../../Database/Repositories/TaskSchedules.js";
+import { TaskSchedule } from "../../Database/Models/TaskSchedule.js";
+import { CreationAttributes } from "sequelize";
 
 @provide(SchedulesPosts)
 export class SchedulesPosts {
   constructor(
-    private readonly client: LemmyApi,
-    private readonly dbservice: PostgresService,
+    private readonly taskScheduleRepository: TaskSchedules,
     private readonly renewPostService: RenewsPosts
   ) {}
 
+  private async initPostScheduleTasks(): Promise<void> {
+    const postCategories =
+      await this.taskScheduleRepository.getCategoriesByTaskType(
+        "postsToAutomate"
+      );
+    const postsToSchedule = getPostsToSchedule(postCategories);
+    if (postsToSchedule !== undefined) {
+      for (const post of postsToSchedule) {
+        const params: CreationAttributes<TaskSchedule> = {
+          category: post.category,
+          nextScheduledTime: getNextScheduledTime(post.category),
+          taskType: "postsToAutomate",
+        };
+        await this.taskScheduleRepository.create(params);
+      }
+    }
+  }
+
   public async createBotTasks(): Promise<BotTask[]> {
-    await this.dbservice.initPostScheduleTasks();
     const botTasks: BotTask[] = [];
-    botTasks.push({
-      cronExpression: "0 5 * * * *",
-      timezone: "Asia/Kuala_Lumpur",
-      doTask: async () => {
-        return this.handlePostSchedule();
-      },
-    });
+    try {
+      await this.initPostScheduleTasks();
+      botTasks.push({
+        cronExpression: "0 5 * * * *",
+        timezone: "Asia/Kuala_Lumpur",
+        doTask: async () => {
+          return this.handlePostSchedule();
+        },
+      });
+    } catch (error) {
+      console.log("Error initializing bot tasks: " + error);
+    }
     return botTasks;
   }
 
   public async handlePostSchedule(): Promise<void> {
     try {
-      const postsToSchedule: TaskSchedule[] | undefined =
-        await this.dbservice.getScheduledTasks("postsToAutomate");
+      const postsToSchedule =
+        await this.taskScheduleRepository.getScheduledTasksByTaskType(
+          "postsToAutomate"
+        );
 
       if (postsToSchedule !== undefined) {
         for (const post of postsToSchedule) {
           this.renewPostService.renewPosts(post.category);
 
-          await this.dbservice.updatePostTaskSchedule(
+          await this.taskScheduleRepository.setNextScheduledTimeByCategory(
             getNextScheduledTime(post.category),
             post.category
           );

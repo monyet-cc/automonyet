@@ -1,14 +1,16 @@
 import { provide } from "inversify-binding-decorators";
 import moment from "moment";
 import { LemmyApi } from "../../ValueObjects/LemmyApi.js";
-import { PostgresService } from "../PostgresServices/PostgresService.js";
 import { PostToCreate } from "../../ValueObjects/PostsToAutomate.js";
+import { PinnedPosts } from "../../Database/Repositories/PinnedPosts.js";
+import { CreationAttributes } from "sequelize";
+import { PinnedPost } from "../../Database/Models/PinnedPost.js";
 
 @provide(CreatesPost)
 export class CreatesPost {
   constructor(
     private readonly client: LemmyApi,
-    private readonly dbservice: PostgresService
+    private readonly pinnedPostRepository: PinnedPosts
   ) {}
 
   private generatePostTitle = (title: string, dateFormat: string): string => {
@@ -34,12 +36,14 @@ export class CreatesPost {
         await this.client.featurePost(postIdentifier, "Local", true);
       }
 
+      const pinnedPost: CreationAttributes<PinnedPost> = {
+        id: postIdentifier,
+        category: post.category,
+        isLocallyPinned: post.pinLocally,
+      };
+
       //save postId in db
-      await this.dbservice.setPostAutoRemoval(
-        postIdentifier,
-        post.category,
-        post.pinLocally
-      );
+      await this.pinnedPostRepository.create(pinnedPost);
     } catch (err) {
       console.log(
         `An error has occured while trying to create the post: ${post.category} in community ${post.communityName}`,

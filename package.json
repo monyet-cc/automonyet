@@ -18,13 +18,19 @@
     "build": "tsc",
     "start": "yarn run build && node ./dist/index.js",
     "dev": "npx nodemon -e ts -w src/ --exec 'yarn run start'",
-    "test": "jest"
+    "watch": "npx nodemon -e ts -w src/ --exec 'yarn run build'",
+    "test": "jest",
+    "migrate-up": "yarn run build && NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js up",
+    "migrate-down": "yarn run build && NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js down",
+    "migrate-up-dev": "NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js up",
+    "migrate-down-dev": "NODE_ENV=development NETWORK_NAME=monyet_default node dist/Classes/Database/Umzug.js down"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
     "@types/jest": "^29.5.2",
-    "@types/node": "^20.3.3",
+    "@types/node": "^20.5.6",
     "@types/pg": "^8.10.2",
+    "@types/validator": "^13.11.1",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "^8.44.0",
@@ -49,9 +55,13 @@
     "lemmy-bot": "^0.4.1",
     "lemmy-js-client": "^0.18.1-rc.3",
     "moment": "^2.29.4",
+    "mysql2": "^3.6.0",
     "pg": "8.2.x",
+    "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.1.13",
-    "sequelize": "^6.32.1"
+    "sequelize": "^6.32.1",
+    "sequelize-typescript": "^2.1.5",
+    "umzug": "^3.3.1"
   },
   "repository": "git@github.com:monyet-cc/automonyet.git"
 }
