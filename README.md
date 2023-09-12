@@ -6,10 +6,38 @@
 
     > git clone git@github.com:monyet-cc/automonyet.git
 
-2.  Set up your env file(refer to .env.example). The bot must be hosted on the same machine where your lemmy instance is hosted.
-    PG_HOST is the container name that hosts the postgres service. The BOT_USERNAME and BOT_PASSWORD will be used to login to your instance. It will create a new account if the account doesn't exist.
+1.5 We have now migrated the bot's database into mysql. You need to run a mysql container that runs within the same docker network as the other lemmy containers.
+    For example, you need to add the following into Lemmy's docker-compose file:
+    mysql:
+        image: mysql:latest  
+        environment:
+          MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}  
+          MYSQL_DATABASE: ${MYSQL_DATABASE}  
+          MYSQL_USER: ${MYSQL_USER}  
+          MYSQL_PASSWORD: ${MYSQL_PASSWORD}  
+        ports:
+          - "${MYSQL_PORT}:3306"
+        volumes:
+          - ./volumes/mysql:/var/lib/mysql 
 
-3.  Create and configure the src/Classes/ValueObjects/PostsToAutomate.json file. Below are the properties you need to configure for the posts.
+    and configure and env file with the following variables: (you may change the database name and user)
+    MYSQL_ROOT_PASSWORD=
+    MYSQL_DATABASE=lemmybot
+    MYSQL_USER=MonyetBot
+    MYSQL_PASSWORD=
+    MYSQL_PORT=3306
+
+2.  Set up your env file(refer to .env.example). The bot must be hosted on the same machine where your lemmy instance is hosted.
+    The BOT_USERNAME and BOT_PASSWORD will be used to login to your instance. It will create a new account if the account doesn't exist.
+    example database configuration:
+    DATABASE_DIALECT=mysql
+    DATABASE_HOST=monyet-mysql-1
+    DATABASE_PORT=3306
+    DATABASE_NAME=lemmybot
+    DATABASE_USER=MonyetBot
+    DATABASE_PASSWORD=
+
+4.  Create and configure the src/Classes/ValueObjects/PostsToAutomate.json file. Below are the properties you need to configure for the posts.
     Example:
     > [{
         "category": "Daily Chat Thread",
