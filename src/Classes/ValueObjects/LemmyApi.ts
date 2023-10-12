@@ -55,8 +55,12 @@ export class LemmyApi {
       .community_view.community.id;
   }
 
-  async login(loginForm: Login): Promise<LoginResponse> {
-    const response: LoginResponse = await this.client.login(loginForm);
-    return response;
+  async login(username: string, password: string): Promise<LoginResponse> {
+    const loginForm: Login = {
+      username_or_email: username,
+      password: password,
+    };
+
+    return await this.client.login(loginForm);
   }
 }
