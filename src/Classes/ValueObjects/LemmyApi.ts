@@ -4,6 +4,8 @@ import {
   LemmyHttp,
   Person,
   PostFeatureType,
+  Login,
+  LoginResponse,
 } from "lemmy-js-client";
 
 export class LemmyApi {
@@ -51,5 +53,10 @@ export class LemmyApi {
   async getCommunityIdentifier(name: string): Promise<number> {
     return (await this.client.getCommunity({ name: name, auth: this.token }))
       .community_view.community.id;
+  }
+
+  async login(loginForm: Login): Promise<LoginResponse> {
+    const response: LoginResponse = await this.client.login(loginForm);
+    return response;
   }
 }
