@@ -6,6 +6,8 @@ import { SchedulesPostsHandling } from "./Classes/Handlers/PrivateMessages/Sched
 import { container } from "./Classes/Services/ConfiguresInversify.js";
 import { Configuration } from "./Classes/ValueObjects/Configuration.js";
 import { SchedulesPosts } from "./Classes/Services/PostServices/SchedulesPosts.js";
+import fastify from "fastify";
+import { authApi } from "./Classes/ApiRoutes/LoginApi.js";
 
 const { LemmyBot } = packages;
 
@@ -86,3 +88,21 @@ const bot: packages.LemmyBot = new LemmyBot({
 });
 
 bot.start();
+
+export const build = (opts = {}) => {
+  const apiserver = fastify(opts);
+
+  apiserver.register(authApi);
+
+  return apiserver;
+};
+
+const apiserver = build({ logger: true });
+
+apiserver.listen({ port: 3030 }, (err, address) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+  console.log(`Server listening at ${address}`);
+});
