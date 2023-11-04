@@ -63,4 +63,16 @@ export class LemmyApi {
 
     return await this.client.login(loginForm);
   }
+
+  async getModereratedCommunityNames(username: string): Promise<string[]> {
+    const communityNameList: string[] = [];
+    const personDetails = await this.client.getPersonDetails({
+      username: username,
+      auth: this.token,
+    });
+    personDetails.moderates.forEach((data) => {
+      communityNameList.push(data.community.name);
+    });
+    return communityNameList;
+  }
 }

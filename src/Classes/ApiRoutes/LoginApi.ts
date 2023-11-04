@@ -35,6 +35,7 @@ export async function authApi(
 
         if (result.registration_created) {
           const clientToken = await generateToken(result);
+          reply.code(200).send(clientToken);
         } else {
           reply.code(400).send({
             message: "Invalid login credentials. Please check your details.",

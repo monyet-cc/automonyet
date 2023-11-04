@@ -1,23 +1,15 @@
 import Fastify from "fastify";
+import { LemmyApi } from "../ValueObjects/LemmyApi.js";
 
-export async function communityApi(fastify: Fastify.FastifyInstance) {
-  const loginForm = {
-    schema: {
-      body: {
-        type: "object",
-        properties: {
-          username: { type: "string" },
-          password: { type: "string" },
-        },
-      },
-    },
-  };
-
-  fastify.post(
-    "/login",
-    loginForm,
+export async function communityApi(
+  fastify: Fastify.FastifyInstance,
+  opts: { lemmyApi: LemmyApi }
+) {
+  fastify.get(
+    "/community",
     async (request: Fastify.FastifyRequest, reply: Fastify.FastifyReply) => {
-      reply.send({ hello: "world" });
+      const client = opts.lemmyApi;
+      const headers = request.headers;
     }
   );
 }
