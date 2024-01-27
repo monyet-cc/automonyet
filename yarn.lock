@@ -2693,10 +2693,10 @@ lemmy-js-client@0.19.0:
     cross-fetch "^3.1.5"
     form-data "^4.0.0"
 
-lemmy-js-client@^0.18.1-rc.3:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/lemmy-js-client/-/lemmy-js-client-0.18.1.tgz#28df266eded0ef4a72b05ee6eabebddadfd81a27"
-  integrity sha512-maafUZ9ZJkXthRZmM0+limJmymF2kmN/8SiKufS3V4OVNM72s+wUFFiyhKmA370g23iZRW6SUagE7jNKnqNyYQ==
+lemmy-js-client@0.19.2-alpha.3:
+  version "0.19.2-alpha.3"
+  resolved "https://registry.yarnpkg.com/lemmy-js-client/-/lemmy-js-client-0.19.2-alpha.3.tgz#644bf9f2bf406b08342ea10f8e325953112f628a"
+  integrity sha512-SqI/S4mPsbo35Yo1ODYP4vhj5lGlci73KKdQigaT+6hO8SQaeATcMBV3RBxUYswNGGLN4vN+sCvavGoATfkqCw==
   dependencies:
     cross-fetch "^3.1.5"
     form-data "^4.0.0"
@@ -3980,6 +3980,13 @@ unique-filename@^1.1.1:
   integrity sha512-Vmp0jIp2ln35UTXuryvjzkjGdRyf9b2lTXuSYUiPmzRcl3FDtYqAwOnTJkAngD9SWhnoJzDbTKwaOrZ+STtxNQ==
   dependencies:
     unique-slug "^2.0.0"
+
+unique-slug@^2.0.0:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/unique-slug/-/unique-slug-2.0.2.tgz#baabce91083fc64e945b0f3ad613e264f7cd4e6c"
+  integrity sha512-zoWr9ObaxALD3DOPfjPSqxt4fnZiWblxHIgeWqW8x7UqDzEtHEQLzji2cuJYQFCU6KmoJikOYAZlrTHHebjx2w==
+  dependencies:
+    imurmurhash "^0.1.4"
 
 update-browserslist-db@^1.0.11:
   version "1.0.11"

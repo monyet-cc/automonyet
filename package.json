@@ -53,7 +53,7 @@
     "inversify": "^6.0.1",
     "inversify-binding-decorators": "^4.0.0",
     "lemmy-bot": "^0.5.1",
-    "lemmy-js-client": "^0.18.1-rc.3",
+    "lemmy-js-client": "0.19.2-alpha.3",
     "moment": "^2.29.4",
     "mysql2": "^3.6.0",
     "pg": "8.2.x",
