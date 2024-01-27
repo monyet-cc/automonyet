@@ -13,8 +13,7 @@ export class LemmyApi {
   ) {}
 
   async createPost(form: Omit<CreatePost, "auth">): Promise<number> {
-    return (await this.client.createPost({ ...form, auth: this.token }))
-      .post_view.post.id;
+    return (await this.client.createPost({ ...form })).post_view.post.id;
   }
 
   async createFeaturedPost(
@@ -36,7 +35,6 @@ export class LemmyApi {
         post_id: postIdentifier,
         featured: featurePost,
         feature_type: featuredType,
-        auth: this.token,
       })
     ).post_view.post.id;
   }
@@ -44,12 +42,11 @@ export class LemmyApi {
   async getDetailsForPerson(person: Person): Promise<GetPersonDetailsResponse> {
     return await this.client.getPersonDetails({
       username: person.name,
-      auth: this.token,
     });
   }
 
   async getCommunityIdentifier(name: string): Promise<number> {
-    return (await this.client.getCommunity({ name: name, auth: this.token }))
-      .community_view.community.id;
+    return (await this.client.getCommunity({ name: name })).community_view
+      .community.id;
   }
 }
