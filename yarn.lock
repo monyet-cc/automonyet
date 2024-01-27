@@ -2676,27 +2676,27 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-lemmy-bot@^0.4.1:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/lemmy-bot/-/lemmy-bot-0.4.5.tgz#b1f01993a38277c124c220017771aa67c173d24c"
-  integrity sha512-GDf/Qjeig3RcjFgYAlUwsA3/YmOgKZOK0vs15KaPDNjMno+l9JZsb0I7XUuIMCPAHZUlSdSBuS9kLJzE9LouAA==
+lemmy-bot@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/lemmy-bot/-/lemmy-bot-0.5.1.tgz#17075e3e09a6e4010e06634f8332b9c3f129bcb2"
+  integrity sha512-dRguH3qHLHRdnZzZ5MvguVy94k8rz/COvF+KJGkn0OOx/Qhzp/ByDv9vXZh0x9rzkddfVp4ODPZCgEDrDPbJog==
   dependencies:
-    lemmy-js-client "0.18.3-rc.1"
-    node-cron "^3.0.2"
+    lemmy-js-client "0.19.0"
+    node-cron "^3.0.3"
     sqlite3 "^5.1.6"
 
-lemmy-js-client@0.18.3-rc.1:
-  version "0.18.3-rc.1"
-  resolved "https://registry.yarnpkg.com/lemmy-js-client/-/lemmy-js-client-0.18.3-rc.1.tgz#e256981618d011de04882edbb81ee450bde0f068"
-  integrity sha512-z+ZqPoeJClxh3oQiD7ICgkrLKwFZvxs07a/28rvCouVu5zbhjGu0xXltq0GpgtzqFsGamXZ3tYz66ryzYjPBxg==
+lemmy-js-client@0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/lemmy-js-client/-/lemmy-js-client-0.19.0.tgz#50098183264fa176784857f45665b06994b31e18"
+  integrity sha512-h+E8wC9RKjlToWw9+kuGFAzk4Fiaf61KqAwzvoCDAfj2L1r+YNt5EDMOggGCoRx5PlqLuIVr7BNEU46KxJfmHA==
   dependencies:
     cross-fetch "^3.1.5"
     form-data "^4.0.0"
 
-lemmy-js-client@^0.18.1-rc.3:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/lemmy-js-client/-/lemmy-js-client-0.18.1.tgz#28df266eded0ef4a72b05ee6eabebddadfd81a27"
-  integrity sha512-maafUZ9ZJkXthRZmM0+limJmymF2kmN/8SiKufS3V4OVNM72s+wUFFiyhKmA370g23iZRW6SUagE7jNKnqNyYQ==
+lemmy-js-client@0.19.2-alpha.3:
+  version "0.19.2-alpha.3"
+  resolved "https://registry.yarnpkg.com/lemmy-js-client/-/lemmy-js-client-0.19.2-alpha.3.tgz#644bf9f2bf406b08342ea10f8e325953112f628a"
+  integrity sha512-SqI/S4mPsbo35Yo1ODYP4vhj5lGlci73KKdQigaT+6hO8SQaeATcMBV3RBxUYswNGGLN4vN+sCvavGoATfkqCw==
   dependencies:
     cross-fetch "^3.1.5"
     form-data "^4.0.0"
@@ -3006,10 +3006,10 @@ node-addon-api@^4.2.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-4.3.0.tgz#52a1a0b475193e0928e98e0426a0d1254782b77f"
   integrity sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==
 
-node-cron@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-3.0.2.tgz#bb0681342bd2dfb568f28e464031280e7f06bd01"
-  integrity sha512-iP8l0yGlNpE0e6q1o185yOApANRe47UPbLf4YxfbiNHt/RU5eBcGB/e0oudruheSf+LQeDMezqC5BVAb5wwRcQ==
+node-cron@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-3.0.3.tgz#c4bc7173dd96d96c50bdb51122c64415458caff2"
+  integrity sha512-dOal67//nohNgYWb+nWmg5dkFdIwDm8EpeGYMekPMrngV3637lqnX0lbUcCtgibHTz6SEz7DAIjKvKDFYCnO1A==
   dependencies:
     uuid "8.3.2"
 
@@ -3978,6 +3978,8 @@ unique-filename@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/unique-filename/-/unique-filename-1.1.1.tgz#1d69769369ada0583103a1e6ae87681b56573230"
   integrity sha512-Vmp0jIp2ln35UTXuryvjzkjGdRyf9b2lTXuSYUiPmzRcl3FDtYqAwOnTJkAngD9SWhnoJzDbTKwaOrZ+STtxNQ==
+  dependencies:
+    unique-slug "^2.0.0"
 
 unique-slug@^2.0.0:
   version "2.0.2"

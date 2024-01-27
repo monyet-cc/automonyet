@@ -10,6 +10,6 @@ export class DeterminesIfUserIsAdmin {
   public async handle(person: Person): Promise<boolean> {
     const details = await this.client.getDetailsForPerson(person);
 
-    return details.person_view.person.admin;
+    return details.person_view.is_admin;
   }
 }
