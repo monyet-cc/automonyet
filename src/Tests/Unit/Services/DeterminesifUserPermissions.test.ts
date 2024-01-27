@@ -125,17 +125,17 @@ describe(DeterminesIfUserIsAdmin, () => {
 
     const person = instance<Person>(mock<Person>());
     const counts = instance<PersonAggregates>(mock<PersonAggregates>());
-    const getPersonInterface = (isAdmin: boolean): Person => {
+    const getPersonInterface = (): Person => {
       return {
         ...person,
-        admin: isAdmin,
       };
     };
 
     const regularUserResponse: GetPersonDetailsResponse = {
       person_view: {
-        person: getPersonInterface(false),
+        person: getPersonInterface(),
         counts: counts,
+        is_admin: false,
       },
       posts: [],
       comments: [],
@@ -144,8 +144,9 @@ describe(DeterminesIfUserIsAdmin, () => {
 
     const adminResponse: GetPersonDetailsResponse = {
       person_view: {
-        person: getPersonInterface(true),
+        person: getPersonInterface(),
         counts: counts,
+        is_admin: true,
       },
       posts: [],
       comments: [],
